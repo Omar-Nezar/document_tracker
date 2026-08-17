@@ -26,9 +26,9 @@ export default function LoadingButton({
                 <Spinner className="h-4 w-4" data-icon="inline-start" />
             )}
 
-            <span className={cn(loading && "opacity-90")}>
+            <div className={cn("flex items-center", loading && "opacity-90")}>
                 {loading ? loadingChildren : children}
-            </span>
+            </div>
         </Button>
     );
 }
