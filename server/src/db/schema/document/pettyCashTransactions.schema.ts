@@ -8,9 +8,9 @@ import {
     timestamp,
     pgEnum,
 } from "drizzle-orm/pg-core";
-import { usersTable } from "./users.schema";
-import { departmentsTable } from "./departments.schema";
-import { branchesTable } from "./branches.schema";
+import { usersTable } from "../user/users.schema";
+import { departmentsTable } from "../organization/departments.schema";
+import { branchesTable } from "../organization/branches.schema";
 import { pettyCashCategoriesTable } from "./pettyCashCategories.schema";
 
 export const transactionStatusEnum = pgEnum(

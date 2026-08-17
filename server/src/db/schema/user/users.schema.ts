@@ -1,6 +1,6 @@
 import { pgTable, serial, integer, text, boolean, timestamp, pgEnum } from "drizzle-orm/pg-core";
-import { departmentsTable } from "./departments.schema";
-import { branchesTable } from "./branches.schema";
+import { departmentsTable } from "../organization/departments.schema";
+import { branchesTable } from "../organization/branches.schema";
 import { rolesTable } from "./roles.schema";
 
 export const usersTable = pgTable("users", {

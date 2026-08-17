@@ -5,8 +5,8 @@ import {
     text,
     timestamp,
 } from "drizzle-orm/pg-core";
-import { usersTable } from "./users.schema";
-import { pettyCashTransactionsTable } from "./pettyCashTransactions.schema";
+import { usersTable } from "../user/users.schema";
+import { pettyCashTransactionsTable } from "../document/pettyCashTransactions.schema";
 
 export const transactionCommentsTable = pgTable(
     "transaction_comments",

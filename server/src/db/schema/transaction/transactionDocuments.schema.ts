@@ -6,9 +6,9 @@ import {
     varchar,
     timestamp,
 } from "drizzle-orm/pg-core";
-import { usersTable } from "./users.schema";
-import { pettyCashTransactionsTable } from "./pettyCashTransactions.schema";
-import { documentTypesTable } from "./documentTypes.schema";
+import { usersTable } from "../user/users.schema";
+import { pettyCashTransactionsTable } from "../document/pettyCashTransactions.schema";
+import { documentTypesTable } from "../document/documentTypes.schema";
 
 export const transactionDocumentsTable = pgTable(
     "transaction_documents",

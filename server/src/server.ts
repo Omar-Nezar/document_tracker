@@ -3,7 +3,7 @@ import express, { type Request, type Response } from 'express';
 import cors from "cors"
 
 import { eq } from 'drizzle-orm';
-import { db } from './db';
+import { db } from './db/db';
 import * as schema from "./db/schema";
 
 import adminRoutes from "./routes/admin.routes"

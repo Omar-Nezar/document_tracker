@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { db } from "../db";
+import { db } from "../db/db";
 
 export const getUsers = async (req: Request, res: Response) => {
     try {
