@@ -26,7 +26,6 @@ import {
     FieldLabel,
     FieldGroup,
 } from "@/components/ui/field"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 
 import { CircleUserRound } from "lucide-react"
