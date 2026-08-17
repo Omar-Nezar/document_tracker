@@ -36,7 +36,9 @@ async function main() {
     const user: typeof schema.usersTable.$inferInsert = {
         name: 'John',
         email: 'john@example.com',
-        password: "password"
+        password: "password",
+        roleId: 1,
+        isActive: true,
     };
 
     await db.insert(schema.usersTable).values(user);
@@ -52,6 +54,9 @@ async function main() {
         })
         .where(eq(schema.usersTable.email, user.email));
     console.log('User info updated!')
+    const res = await db.select({name: schema.usersTable.name}).from(schema.usersTable).where(eq(schema.usersTable.email, user.email))
+    const newUser = res[0]?.name;
+    console.log('New Name: ', newUser );
 
     await db.delete(schema.usersTable).where(eq(schema.usersTable.email, user.email));
     console.log('User deleted!')
