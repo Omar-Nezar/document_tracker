@@ -53,7 +53,7 @@ export default function Login() {
         <div className="flex min-h-svh items-center justify-center bg-muted/40 p-4 sm:p-6">
             <Card className="w-full max-w-md shadow-lg border-border/60">
                 <CardHeader className="space-y-2 text-center">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full">
                         <CircleUserRound className="h-full w-full text-primary" />
                     </div>
 
