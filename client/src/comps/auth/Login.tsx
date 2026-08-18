@@ -86,16 +86,16 @@ export default function Login() {
                                         <SelectValue>
                                             {
                                                 {
-                                                    user: "User",
-                                                    admin: "Admin",
+                                                    Employee: "Employee",
+                                                    Admin: "Admin",
                                                 }[form.type]
                                             }
                                         </SelectValue>
                                     </SelectTrigger>
 
                                     <SelectContent>
-                                        <SelectItem value="user">User</SelectItem>
-                                        <SelectItem value="admin">Admin</SelectItem>
+                                        <SelectItem value="Employee">Employee</SelectItem>
+                                        <SelectItem value="Admin">Admin</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </Field>
