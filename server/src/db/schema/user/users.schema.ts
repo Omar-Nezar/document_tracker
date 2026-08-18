@@ -15,6 +15,7 @@ export const usersTable = pgTable("users", {
     .notNull(),
   roleId: integer("role_id")
     .references(() => rolesTable.id)
+    .default(1)
     .notNull(),
   departmentId: integer("department_id")
     .references(() => departmentsTable.id),

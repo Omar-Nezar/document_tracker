@@ -7,6 +7,7 @@ import { db } from './db/db';
 import * as schema from "./db/schema";
 
 import adminRoutes from "./routes/admin.routes"
+import authRoutes from "./routes/auth.routes"
 
 const app = express();
 app.use(express.json());
@@ -28,6 +29,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/admin", adminRoutes)
+app.use("/auth", authRoutes)
 
 /*
  *  Sample script demo
@@ -62,4 +64,4 @@ async function main() {
     console.log('User deleted!')
 }
 
-main();
+// main();
