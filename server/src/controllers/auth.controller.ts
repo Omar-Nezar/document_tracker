@@ -8,10 +8,10 @@ const { usersTable } = schema
 
 export const login = async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
         const genericMsg = "Invalid email or password";
 
-        if (!email || !password) {
+        if (!email || !password || !role) {
             return res.status(400).json({
                 message: "Email and password are required",
             });
@@ -24,7 +24,6 @@ export const login = async (req: Request, res: Response) => {
             },
         });
 
-
         if (!user) {
             return res.status(401).json({
                 message: genericMsg,
@@ -33,13 +32,19 @@ export const login = async (req: Request, res: Response) => {
 
         if (!user.isActive) {
             return res.status(403).json({
-                message: "Your account has been disabled",
+                message: "Account disabled",
             });
         }
 
         const passwordMatch = await comparePassword(password, user.password);
 
         if (!passwordMatch) {
+            return res.status(401).json({
+                message: genericMsg,
+            });
+        }
+
+        if (user.role.name !== role) {
             return res.status(401).json({
                 message: genericMsg,
             });

@@ -2,9 +2,10 @@ import { Link, useNavigate } from "react-router"
 import { useState } from "react";
 import { type RootState } from "@/src/store/store";
 import { useAppDispatch, useAppSelector } from "@/src/store/store";
+import { login } from "@/src/slices/auth.slice";
+
 import LoadingButton from "@/src/comps/misc/LoadingButton";
 import PasswordInput from "@/src/comps/misc/PasswordInput";
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -27,6 +28,7 @@ import {
     FieldGroup,
 } from "@/components/ui/field"
 import { Separator } from "@/components/ui/separator"
+import { toast } from "@/components/ui/toast"
 
 import { CircleUserRound } from "lucide-react"
 
@@ -40,13 +42,19 @@ export default function Login() {
     );
 
     const [form, setForm] = useState({
-        type: "user",
+        role: "Employee",
         email: "",
         password: "",
     });
 
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const promise = dispatch(login(form)).unwrap();
+        toast.promise(promise, {
+            loading: "Logging in...",
+            success: "Login successful",
+            error: "Login failed",
+        });
     };
 
     return (
@@ -75,10 +83,10 @@ export default function Login() {
                                 <FieldLabel htmlFor="userType">User Type</FieldLabel>
                                 <Select
                                     id="userType"
-                                    value={form.type}
+                                    value={form.role}
                                     onValueChange={(value) => {
                                         if (value !== null) {
-                                            setForm({ ...form, type: value })
+                                            setForm({ ...form, role: value })
                                         }
                                     }}
                                 >
@@ -88,7 +96,7 @@ export default function Login() {
                                                 {
                                                     Employee: "Employee",
                                                     Admin: "Admin",
-                                                }[form.type]
+                                                }[form.role]
                                             }
                                         </SelectValue>
                                     </SelectTrigger>

@@ -1,4 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import API from "./api";
+
+export const login = createAsyncThunk(
+    "auth/login",
+    async (data: { email: string; password: string }, { rejectWithValue }) => {
+        try {
+            const res = await API.post("/auth/login", data);
+            return res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Login failed");
+        }
+    }
+);
 
 interface AuthState {
     token: any;
@@ -29,9 +42,22 @@ const authSlice = createSlice({
             state.error = null
         }
     },
-    // extraReducers: (builder) => {
-
-    // },
+    extraReducers: (builder) => {
+        // LOGIN
+        builder
+            .addCase(login.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                state.loading = false;
+                state.token = action.payload.token || "";
+            })
+            .addCase(login.rejected, (state, action: any) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
+    },
 });
 
 export const { setToken, resetAuth } = authSlice.actions;

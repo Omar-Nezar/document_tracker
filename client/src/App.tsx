@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/toast"
 // Auth imports
 import Login from './comps/auth/Login'
 
-// User imports
-import UserHome from './comps/user/UserHome'
+// Employee imports
+import EmployeeHome from './comps/employee/EmployeeHome'
 
 // Admin imports
 import AdminHome from './comps/admin/AdminHome'
@@ -27,8 +27,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/verifyregistration/:token" element={<VerifyRegistration />} /> */}
 
-        {/* User Routes */}
-        <Route path="/userHome" element={<UserHome />} />
+        {/* Employee Routes */}
+        <Route path="/employeeHome" element={<EmployeeHome />} />
 
         {/* Admin Routes */}
 
