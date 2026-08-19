@@ -45,6 +45,8 @@
     // Path aliases
     "paths": {
       "@/*": ["./src/*"],
+      "@db": ["./src/db/db.ts"],
+      "@schema": ["./src/db/index.ts"],
       "@shared/*": ["../shared/*"],
     },
   }
