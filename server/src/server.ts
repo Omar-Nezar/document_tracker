@@ -2,10 +2,6 @@ import 'dotenv/config';
 import express, { type Request, type Response } from 'express';
 import cors from "cors"
 
-import { eq } from 'drizzle-orm';
-import { db } from './db/db';
-import * as schema from "./db/schema";
-
 import adminRoutes from "./routes/admin.routes"
 import authRoutes from "./routes/auth.routes"
 
@@ -30,38 +26,3 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/admin", adminRoutes)
 app.use("/auth", authRoutes)
-
-/*
- *  Sample script demo
- */
-async function main() {
-    const user: typeof schema.usersTable.$inferInsert = {
-        name: 'John',
-        email: 'john@example.com',
-        password: "password",
-        roleId: 1,
-        isActive: true,
-    };
-
-    await db.insert(schema.usersTable).values(user);
-    console.log('New user created!')
-
-    const users = await db.select().from(schema.usersTable);
-    console.log('Getting all users from the database: ', users)
-
-    await db
-        .update(schema.usersTable)
-        .set({
-            name: 'Jonathan',
-        })
-        .where(eq(schema.usersTable.email, user.email));
-    console.log('User info updated!')
-    const res = await db.select({name: schema.usersTable.name}).from(schema.usersTable).where(eq(schema.usersTable.email, user.email))
-    const newUser = res[0]?.name;
-    console.log('New Name: ', newUser );
-
-    await db.delete(schema.usersTable).where(eq(schema.usersTable.email, user.email));
-    console.log('User deleted!')
-}
-
-// main();
