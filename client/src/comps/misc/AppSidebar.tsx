@@ -8,20 +8,21 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarRail,
 } from "@/components/ui/sidebar"
-import { sidebarConfig } from "@/src/utils/configs/sidebar.config"
+import { BookText } from "lucide-react"
 
+import { sidebarConfig } from "@/src/utils/configs/sidebar.config"
 import { Link, useLocation } from "react-router"
 
 export function AppSidebar() {
+    const location = useLocation()
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader className="border-b px-4 py-3">
                 <div className="flex items-center gap-2 font-bold text-lg tracking-tight">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground text-xs">
-                        A
-                    </div>
-                    <span className="group-data-[collapsible=icon]:hidden">Acme Inc</span>
+                    <BookText className="h-4 w-4" />
+                    <span className="group-data-[collapsible=icon]:hidden">Document Tracker</span>
                 </div>
             </SidebarHeader>
 
@@ -32,7 +33,6 @@ export function AppSidebar() {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {group.items.map((item) => {
-                                    const location = useLocation()
                                     const isActive = location.pathname === item.to
                                     const Icon = item.icon
                                     return (
@@ -55,6 +55,7 @@ export function AppSidebar() {
                     </SidebarGroup>
                 ))}
             </SidebarContent>
+            <SidebarRail />
         </Sidebar>
     )
 }

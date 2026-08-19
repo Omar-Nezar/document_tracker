@@ -15,7 +15,6 @@ createRoot(document.getElementById('root')!).render(
         <TooltipProvider>
           <App />
         </TooltipProvider>
-        <App />
       </Provider>
     </BrowserRouter>
   </StrictMode>,

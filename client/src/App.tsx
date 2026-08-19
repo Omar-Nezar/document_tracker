@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router'
 import { Toaster } from "@/components/ui/toast"
 

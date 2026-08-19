@@ -1,5 +1,5 @@
 // config/sidebarConfig.ts
-import { Home, Users, Briefcase, Settings, type LucideIcon } from "lucide-react"
+import { Home, type LucideIcon } from "lucide-react"
 
 export interface NavItem {
   label: string

@@ -6,7 +6,7 @@ export function Header() {
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background px-4">
       <div className="flex items-center gap-2">
         <SidebarTrigger />
-        <Separator orientation="vertical" className="h-4" />
+        <Separator orientation="vertical" className="h-8" />
         <span className="font-semibold text-sm">Dashboard</span>
       </div>
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
