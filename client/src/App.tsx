@@ -13,6 +13,7 @@ import AdminHome from './comps/admin/AdminHome'
 
 // Misc imports
 import ThemeButton from './comps/misc/ThemeButton'
+import Layout from './comps/misc/Layout'
 
 function App() {
 
@@ -28,9 +29,10 @@ function App() {
         <Route path="/verifyregistration/:token" element={<VerifyRegistration />} /> */}
 
         {/* Employee Routes */}
-        <Route path="/employeeHome" element={<EmployeeHome />} />
-        <Route path="/addRequest" element={<AddRequest />} />
-
+        <Route element={<Layout />}>
+          <Route path="/employeeHome" element={<EmployeeHome />} />
+          <Route path="/addRequest" element={<AddRequest />} />
+        </Route>
         {/* Admin Routes */}
 
         <Route path="/adminhome" element={<AdminHome />} />
