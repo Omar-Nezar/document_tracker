@@ -6,6 +6,7 @@ import Login from './comps/auth/Login'
 
 // Employee imports
 import EmployeeHome from './comps/employee/EmployeeHome'
+import AddRequest from './comps/employee/AddRequest'
 
 // Admin imports
 import AdminHome from './comps/admin/AdminHome'
@@ -28,6 +29,7 @@ function App() {
 
         {/* Employee Routes */}
         <Route path="/employeeHome" element={<EmployeeHome />} />
+        <Route path="/addRequest" element={<AddRequest />} />
 
         {/* Admin Routes */}
 

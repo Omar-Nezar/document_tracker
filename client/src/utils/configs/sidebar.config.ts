@@ -1,5 +1,9 @@
 // config/sidebarConfig.ts
-import { Home, type LucideIcon } from "lucide-react"
+import { 
+  Home,
+  FilePlusCorner, 
+  type LucideIcon 
+} from "lucide-react"
 
 export interface NavItem {
   label: string
@@ -19,6 +23,7 @@ export const sidebarConfig: SidebarConfig = {
     label: "Employee Management",
     items: [
       { label: "Dashboard", to: "/employeeHome", icon: Home },
+      { label: "Requests", to: "/addRequest", icon: FilePlusCorner },
     ],
   },
 //   Organization: {
