@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/db";
-import * as schema from "@/db/schema";
-import { hashPassword, comparePassword } from "@/utils/hash";
+import { usersTable } from "@schema";
 
-const { usersTable } = schema
+import { hashPassword, comparePassword } from "@/utils/hash";
+import { getUserWithRoleByEmail } from "@/db/queries/user.queries";
+import { generateAuthToken } from "@/utils/generateAuthToken";
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -17,12 +18,7 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
-        const user = await db.query.usersTable.findFirst({
-            where: eq(usersTable.email, email),
-            with: {
-                role: true,
-            },
-        });
+        const user = await getUserWithRoleByEmail(email);
 
         if (!user) {
             return res.status(401).json({
@@ -50,13 +46,11 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
+        const token = generateAuthToken(user);
+
         return res.status(200).json({
             message: "Login successful",
-            user: {
-                id: user.id,
-                email: user.email,
-                role: user.role.name,
-            },
+            token,
         });
     } catch (error) {
         console.error("Login error:", error);
