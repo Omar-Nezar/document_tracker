@@ -73,5 +73,14 @@ export const pettyCashTransactionsTable = pgTable(
     }
 );
 
+// Counter table for concurrency safety
+export const transactionCounters = pgTable("transaction_counters", {
+    year: integer("year").primaryKey(),
+    lastNumber: integer("last_number").notNull().default(0),
+});
+
+export type TransactionCounter = typeof transactionCounters.$inferSelect;
+export type NewTransactionCounter = typeof transactionCounters.$inferInsert;
+
 export type PettyCashTransaction = typeof pettyCashTransactionsTable.$inferSelect;
 export type NewPettyCashTransaction = typeof pettyCashTransactionsTable.$inferInsert;
