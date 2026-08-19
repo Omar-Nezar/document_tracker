@@ -26,6 +26,7 @@ import {
     Field,
     FieldLabel,
     FieldGroup,
+    FieldSet,
 } from "@/components/ui/field"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/toast"
@@ -78,87 +79,90 @@ export default function Login() {
 
                 <CardContent>
                     <form onSubmit={handleSubmit}>
-                        <FieldGroup>
-                            <Field>
-                                <FieldLabel htmlFor="userType">User Type</FieldLabel>
-                                <Select
-                                    id="userType"
-                                    value={form.role}
-                                    onValueChange={(value) => {
-                                        if (value !== null) {
-                                            setForm({ ...form, role: value })
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger className="w-full h-10">
-                                        <SelectValue>
-                                            {
-                                                {
-                                                    Employee: "Employee",
-                                                    Admin: "Admin",
-                                                }[form.role]
+                        <FieldSet>
+                            <FieldGroup>
+                                <Field>
+                                    <FieldLabel htmlFor="userType">User Type</FieldLabel>
+                                    <Select
+                                        id="userType"
+                                        value={form.role}
+                                        onValueChange={(value) => {
+                                            if (value !== null) {
+                                                setForm({ ...form, role: value })
                                             }
-                                        </SelectValue>
-                                    </SelectTrigger>
-
-                                    <SelectContent>
-                                        <SelectItem value="Employee">Employee</SelectItem>
-                                        <SelectItem value="Admin">Admin</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </Field>
-
-                            <Field>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    value={form.email}
-                                    onChange={(e) =>
-                                        setForm({ ...form, email: e.target.value })
-                                    }
-                                    className="h-10"
-                                    autoComplete="email"
-                                />
-                            </Field>
-
-                            <Field>
-                                <div className="flex items-center justify-between">
-                                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                                    <Button
-                                        variant="link"
-                                        size="sm"
-                                        className="h-auto p-0 text-xs font-normal text-muted-foreground hover:text-primary"
-                                        render={
-                                            <Link to="/forgotpassword">Forgot password?</Link>
-                                        }
+                                        }}
                                     >
-                                    </Button>
-                                </div>
-                                <PasswordInput
-                                    id="password"
-                                    placeholder="Enter your password"
-                                    value={form.password}
-                                    onChange={(e) =>
-                                        setForm({ ...form, password: e.target.value })
-                                    }
-                                    className="h-10"
-                                    autoComplete="current-password"
-                                />
-                            </Field>
+                                        <SelectTrigger className="w-full h-10">
+                                            <SelectValue>
+                                                {
+                                                    {
+                                                        Employee: "Employee",
+                                                        Admin: "Admin",
+                                                    }[form.role]
+                                                }
+                                            </SelectValue>
+                                        </SelectTrigger>
 
-                            <Separator />
+                                        <SelectContent>
+                                            <SelectItem value="Employee">Employee</SelectItem>
+                                            <SelectItem value="Admin">Admin</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </Field>
 
-                            <LoadingButton
-                                className="w-full h-11 text-sm font-medium"
-                                type="submit"
-                                loading={loading}
-                                loadingChildren="Signing in..."
-                            >
-                                Sign in
-                            </LoadingButton>
-                        </FieldGroup>
+                                <Field>
+                                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="name@example.com"
+                                        value={form.email}
+                                        onChange={(e) =>
+                                            setForm({ ...form, email: e.target.value })
+                                        }
+                                        className="h-10"
+                                        autoComplete="email"
+                                    />
+                                </Field>
+
+                                <Field>
+                                    <div className="flex items-center justify-between">
+                                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                                        <Button
+                                            variant="link"
+                                            size="sm"
+                                            className="h-auto p-0 text-xs font-normal text-muted-foreground hover:text-primary"
+                                            nativeButton={false}
+                                            render={
+                                                <Link to="/forgotpassword">Forgot password?</Link>
+                                            }
+                                        >
+                                        </Button>
+                                    </div>
+                                    <PasswordInput
+                                        id="password"
+                                        placeholder="Enter your password"
+                                        value={form.password}
+                                        onChange={(e) =>
+                                            setForm({ ...form, password: e.target.value })
+                                        }
+                                        className="h-10"
+                                        autoComplete="current-password"
+                                    />
+                                </Field>
+
+                                <Separator />
+
+                                <LoadingButton
+                                    className="w-full h-11 text-sm font-medium"
+                                    type="submit"
+                                    loading={loading}
+                                    loadingChildren="Signing in..."
+                                >
+                                    Sign in
+                                </LoadingButton>
+                            </FieldGroup>
+                        </FieldSet>
                     </form>
 
                     <div className="mt-2 flex items-center gap-3">
@@ -175,6 +179,7 @@ export default function Login() {
                             variant="link"
                             size="sm"
                             className="p-0 font-semibold h-auto"
+                            nativeButton={false}
                             render={
                                 <Link to="/register">Create account</Link>
                             }>
