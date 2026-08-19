@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router";
-
-import Layout from "@/src/comps/misc/Layout";
 
 import {
     Card,
@@ -21,9 +18,15 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import {
+    Field,
+    FieldSet,
+    FieldGroup,
+    FieldLabel,
+    FieldDescription,
+} from "@/components/ui/field";
 
 import {
-    ArrowLeft,
     FileText,
     Upload,
     X,
@@ -67,9 +70,7 @@ export default function NewRequest() {
     };
 
 
-    const handleSubmit = (
-        event: React.FormEvent
-    ) => {
+    const handleSubmit = (event: React.SubmitEvent) => {
         event.preventDefault();
 
         // API call will go here later
@@ -84,257 +85,247 @@ export default function NewRequest() {
 
 
     return (
-        <Layout>
-            <div className="mx-auto w-full max-w-6xl p-6">
+        <div className="mx-auto w-full max-w-6xl p-6">
 
-                {/* Header */}
-                <div className="mb-6 flex items-center gap-3">
+            {/* Header */}
+            <div className="mb-6 flex items-center gap-3">
+                <div>
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        New Petty Cash Request
+                    </h1>
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        render={
-                            <Link to="/employee/requests">
-                                <ArrowLeft />
-                            </Link>
-                        }
-                    />
-
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            New Petty Cash Request
-                        </h1>
-
-                        <p className="text-sm text-muted-foreground">
-                            Submit a new request for petty cash.
-                        </p>
-                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        Submit a new request for petty cash.
+                    </p>
                 </div>
+            </div>
 
-                <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
 
-                    <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-6 lg:grid-cols-3">
 
-                        {/* Request Details */}
-                        <Card className="lg:col-span-2">
+                    {/* Request Details */}
+                    <Card className="lg:col-span-2">
 
-                            <CardHeader>
-                                <CardTitle>
-                                    Request Details
-                                </CardTitle>
+                        <CardHeader>
+                            <CardTitle>
+                                Request Details
+                            </CardTitle>
 
-                                <CardDescription>
-                                    Provide the information for your
-                                    petty cash request.
-                                </CardDescription>
-                            </CardHeader>
+                            <CardDescription>
+                                Provide the information for your
+                                petty cash request.
+                            </CardDescription>
+                        </CardHeader>
 
-                            <CardContent className="space-y-6">
+                        <CardContent className="space-y-6">
+                            <FieldSet>
+                                <FieldGroup>
+                                    <Field>
+                                        <FieldLabel htmlFor="amount">
+                                            Amount
+                                        </FieldLabel>
 
-                                {/* Amount */}
-                                <div className="space-y-2">
+                                        <div className="relative">
 
-                                    <Label htmlFor="amount">
-                                        Amount
-                                    </Label>
+                                            <Input
+                                                id="amount"
+                                                name="amount"
+                                                type="number"
+                                                min="0"
+                                                step="1"
+                                                placeholder="0.000"
+                                                className="pr-14"
+                                                required
+                                            />
 
-                                    <div className="relative">
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                                OMR
+                                            </span>
+                                        </div>
+                                    </Field>
 
-                                        <Input
-                                            id="amount"
-                                            name="amount"
-                                            type="number"
-                                            min="0"
-                                            step="0.001"
-                                            placeholder="0.000"
-                                            className="pr-14"
+                                    <Field>
+                                        <FieldLabel>
+                                            Category
+                                        </FieldLabel>
+
+                                        <Select required>
+
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a category" />
+                                            </SelectTrigger>
+
+                                            <SelectContent>
+
+                                                <SelectItem value="vehicle-expense">
+                                                    Vehicle Expense
+                                                </SelectItem>
+
+                                                <SelectItem value="office-supplies">
+                                                    Office Supplies
+                                                </SelectItem>
+
+                                                <SelectItem value="transportation">
+                                                    Transportation
+                                                </SelectItem>
+
+                                                <SelectItem value="emergency">
+                                                    Emergency Expense
+                                                </SelectItem>
+
+                                                <SelectItem value="miscellaneous">
+                                                    Miscellaneous
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </Field>
+
+                                    {/* Description */}
+
+                                    <Field>
+                                        <FieldLabel htmlFor="description">
+                                            Description
+                                        </FieldLabel>
+
+                                        <Textarea
+                                            id="description"
+                                            name="description"
+                                            placeholder="Describe what the petty cash will be used for..."
+                                            className="min-h-32 resize-none"
                                             required
                                         />
 
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                            OMR
-                                        </span>
-                                    </div>
-                                </div>
+                                        <FieldDescription className="text-xs text-muted-foreground">
+                                            Provide enough detail for the request
+                                            to be reviewed.
+                                        </FieldDescription>
+                                    </Field>
+                                </FieldGroup>
+                            </FieldSet>
+                        </CardContent>
+                    </Card>
 
-                                {/* Category */}
-                                <div className="space-y-2">
+                    {/* Documents */}
+                    <Card>
 
-                                    <Label>
-                                        Category
-                                    </Label>
+                        <CardHeader>
 
-                                    <Select required>
+                            <CardTitle>
+                                Supporting Documents
+                            </CardTitle>
 
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a category" />
-                                        </SelectTrigger>
+                            <CardDescription>
+                                Attach receipts or other supporting
+                                documents.
+                            </CardDescription>
 
-                                        <SelectContent>
+                        </CardHeader>
 
-                                            <SelectItem value="vehicle-expense">
-                                                Vehicle Expense
-                                            </SelectItem>
+                        <CardContent className="space-y-4">
+                            <FieldSet>
+                                <FieldGroup>
 
-                                            <SelectItem value="office-supplies">
-                                                Office Supplies
-                                            </SelectItem>
+                                    {/* Upload area */}
+                                    <FieldLabel
+                                        htmlFor="documents"
+                                        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center transition-colors hover:bg-muted/50 w-full"
+                                    >
 
-                                            <SelectItem value="transportation">
-                                                Transportation
-                                            </SelectItem>
-
-                                            <SelectItem value="emergency">
-                                                Emergency Expense
-                                            </SelectItem>
-
-                                            <SelectItem value="miscellaneous">
-                                                Miscellaneous
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Description */}
-                                <div className="space-y-2">
-
-                                    <Label htmlFor="description">
-                                        Description
-                                    </Label>
-
-                                    <Textarea
-                                        id="description"
-                                        name="description"
-                                        placeholder="Describe what the petty cash will be used for..."
-                                        className="min-h-32 resize-none"
-                                        required
-                                    />
-
-                                    <p className="text-xs text-muted-foreground">
-                                        Provide enough detail for the request
-                                        to be reviewed.
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Documents */}
-                        <Card>
-
-                            <CardHeader>
-
-                                <CardTitle>
-                                    Supporting Documents
-                                </CardTitle>
-
-                                <CardDescription>
-                                    Attach receipts or other supporting
-                                    documents.
-                                </CardDescription>
-
-                            </CardHeader>
-
-                            <CardContent className="space-y-4">
-
-                                {/* Upload area */}
-                                <label
-                                    htmlFor="documents"
-                                    className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center transition-colors hover:bg-muted/50"
-                                >
-
-                                    <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-muted">
-                                        <Upload className="size-5" />
-                                    </div>
-
-                                    <p className="text-sm font-medium">
-                                        Upload documents
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-muted-foreground">
-                                        PDF, JPG, PNG up to 10MB
-                                    </p>
-
-                                    <Input
-                                        id="documents"
-                                        type="file"
-                                        multiple
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        className="hidden"
-                                        onChange={handleFileChange}
-                                    />
-
-                                </label>
-
-                                {/* Selected files */}
-                                {files.length > 0 && (
-                                    <div className="space-y-2">
+                                        <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-muted">
+                                            <Upload className="size-5" />
+                                        </div>
 
                                         <p className="text-sm font-medium">
-                                            Selected files
+                                            Upload documents
                                         </p>
 
-                                        {files.map(
-                                            ({ file, id }) => (
-                                                <div
-                                                    key={id}
-                                                    className="flex items-center gap-3 rounded-md border p-3"
-                                                >
+                                        <p className="mt-1 text-xs text-muted-foreground">
+                                            PDF, JPG, PNG up to 10MB
+                                        </p>
 
-                                                    <FileText className="size-4 shrink-0 text-muted-foreground" />
+                                        <Input
+                                            id="documents"
+                                            type="file"
+                                            multiple
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                            className="hidden"
+                                            onChange={handleFileChange}
+                                        />
 
-                                                    <div className="min-w-0 flex-1">
+                                    </FieldLabel>
 
-                                                        <p className="truncate text-sm font-medium">
-                                                            {file.name}
-                                                        </p>
+                                    {/* Selected files */}
+                                    {files.length > 0 && (
+                                        <div className="space-y-2">
 
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {(
-                                                                file.size /
-                                                                1024 /
-                                                                1024
-                                                            ).toFixed(2)}{" "}
-                                                            MB
-                                                        </p>
+                                            <p className="text-sm font-medium">
+                                                Selected files
+                                            </p>
 
-                                                    </div>
-
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            removeFile(id)
-                                                        }
+                                            {files.map(
+                                                ({ file, id }) => (
+                                                    <div
+                                                        key={id}
+                                                        className="flex items-center gap-3 rounded-md border p-3"
                                                     >
-                                                        <X />
-                                                    </Button>
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </div>
 
-                    {/* Actions */}
-                    <div className="mt-6 flex justify-end gap-3">
+                                                        <FileText className="size-4 shrink-0 text-muted-foreground" />
 
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleSaveDraft}
-                        >
-                            Save Draft
-                        </Button>
+                                                        <div className="min-w-0 flex-1">
 
-                        <Button type="submit">
-                            Submit Request
-                        </Button>
-                    </div>
-                </form>
-            </div>
-        </Layout>
+                                                            <p className="truncate text-sm font-medium">
+                                                                {file.name}
+                                                            </p>
+
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {(
+                                                                    file.size /
+                                                                    1024 /
+                                                                    1024
+                                                                ).toFixed(2)}{" "}
+                                                                MB
+                                                            </p>
+
+                                                        </div>
+
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() =>
+                                                                removeFile(id)
+                                                            }
+                                                        >
+                                                            <X />
+                                                        </Button>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+                                </FieldGroup>
+                            </FieldSet>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Actions */}
+                <div className="mt-6 flex justify-end gap-3">
+
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSaveDraft}
+                    >
+                        Save Draft
+                    </Button>
+
+                    <Button type="submit">
+                        Submit Request
+                    </Button>
+                </div>
+            </form>
+        </div>
     );
 }
