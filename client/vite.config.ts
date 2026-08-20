@@ -20,6 +20,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./"),
+      "@shared": path.resolve(import.meta.dirname, "../shared"),
+      "@misc": path.resolve(import.meta.dirname, "./src/comps/misc"),
     }
   }
 })

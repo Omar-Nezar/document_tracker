@@ -10,9 +10,9 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"],
+      "@shared/*": ["../shared/*"],
+      "@misc/*": ["./src/comps/misc/*"]
     }
   }
 }

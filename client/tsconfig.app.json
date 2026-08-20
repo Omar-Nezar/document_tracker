@@ -26,9 +26,9 @@
     "noFallthroughCasesInSwitch": true,
     /* Path Resolution */
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"],
+      "@shared/*": ["../shared/*"],
+      "@misc/*": ["./src/comps/misc/*"]
     }
   },
   "include": [
