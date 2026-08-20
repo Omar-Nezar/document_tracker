@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createTransaction } from "@/src/slices/transaction.slice";
+import { useAppDispatch, useAppSelector, type RootState } from "@/src/store/store";
 
 import {
     Card,
@@ -8,7 +12,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
@@ -18,13 +21,16 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import LoadingButton from "@/src/comps/misc/LoadingButton";
 import {
     Field,
     FieldSet,
     FieldGroup,
     FieldLabel,
+    FieldError,
     FieldDescription,
 } from "@/components/ui/field";
+import ErrorField from "@/src/comps/misc/ErrorField";
 
 import {
     FileText,
@@ -32,15 +38,33 @@ import {
     X,
 } from "lucide-react";
 
+import { createTransactionSchema, type CreateTransactionForm } from "@shared/schemas/transaction.schema";
 
 interface SelectedFile {
     file: File;
     id: string;
 }
 
-
 export default function NewRequest() {
     const [files, setFiles] = useState<SelectedFile[]>([]);
+
+    const { loading } = useAppSelector(
+        (state: RootState) => state.transaction
+    );
+
+    const dispatch = useAppDispatch();
+
+    const form = useForm<CreateTransactionForm>({
+        resolver: zodResolver(
+            createTransactionSchema
+        ),
+
+        defaultValues: {
+            amount: 0,
+            categoryId: 0,
+            description: "",
+        },
+    });
 
     const handleFileChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -62,27 +86,41 @@ export default function NewRequest() {
         event.target.value = "";
     };
 
-
     const removeFile = (id: string) => {
         setFiles((previous) =>
             previous.filter((file) => file.id !== id)
         );
     };
 
-
-    const handleSubmit = (event: React.SubmitEvent) => {
-        event.preventDefault();
-
-        // API call will go here later
-        console.log("Submit request");
+    const handleSubmit = (
+        data: CreateTransactionForm
+    ) => {
+        dispatch(
+            createTransaction({
+                ...data,
+                submit: true,
+            })
+        );
     };
-
 
     const handleSaveDraft = () => {
-        // API call will go here later
-        console.log("Save draft");
+        const data = form.getValues();
+
+        dispatch(
+            createTransaction({
+                ...data,
+                submit: false,
+            })
+        );
     };
 
+    const categoryLabels: Record<number, string> = {
+        1: "Vehicle Expense",
+        2: "Office Supplies",
+        3: "Transportation",
+        4: "Emergency Expense",
+        5: "Miscellaneous",
+    };
 
     return (
         <div className="mx-auto w-full max-w-6xl p-6">
@@ -100,7 +138,7 @@ export default function NewRequest() {
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
 
                 <div className="grid gap-6 lg:grid-cols-3">
 
@@ -118,7 +156,7 @@ export default function NewRequest() {
                             </CardDescription>
                         </CardHeader>
 
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-4">
                             <FieldSet>
                                 <FieldGroup>
                                     <Field>
@@ -130,19 +168,21 @@ export default function NewRequest() {
 
                                             <Input
                                                 id="amount"
-                                                name="amount"
                                                 type="number"
                                                 min="0"
                                                 step="1"
                                                 placeholder="0.000"
                                                 className="pr-14"
-                                                required
+                                                {...form.register("amount", {
+                                                    valueAsNumber: true,
+                                                })}
                                             />
 
                                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                                                 OMR
                                             </span>
                                         </div>
+                                        <ErrorField message={form.formState.errors.amount?.message} />
                                     </Field>
 
                                     <Field>
@@ -150,35 +190,53 @@ export default function NewRequest() {
                                             Category
                                         </FieldLabel>
 
-                                        <Select required>
+                                        <Select
+                                            value={
+                                                form.watch("categoryId")
+                                                    ? String(form.watch("categoryId"))
+                                                    : ""
+                                            }
+                                            onValueChange={(value) =>
+                                                form.setValue(
+                                                    "categoryId",
+                                                    Number(value),
+                                                    {
+                                                        shouldValidate: true,
+                                                    }
+                                                )
+                                            }
+                                        >
 
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a category" />
+                                                <SelectValue placeholder="Select a category">
+                                                    {categoryLabels[form.watch("categoryId")]}
+                                                </SelectValue>
                                             </SelectTrigger>
 
                                             <SelectContent>
 
-                                                <SelectItem value="vehicle-expense">
+                                                <SelectItem value="1">
                                                     Vehicle Expense
                                                 </SelectItem>
 
-                                                <SelectItem value="office-supplies">
+                                                <SelectItem value="2">
                                                     Office Supplies
                                                 </SelectItem>
 
-                                                <SelectItem value="transportation">
+                                                <SelectItem value={3}>
                                                     Transportation
                                                 </SelectItem>
 
-                                                <SelectItem value="emergency">
+                                                <SelectItem value={4}>
                                                     Emergency Expense
                                                 </SelectItem>
 
-                                                <SelectItem value="miscellaneous">
+                                                <SelectItem value={5}>
                                                     Miscellaneous
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
+                                        <ErrorField message={form.formState.errors.categoryId?.message} />
                                     </Field>
 
                                     {/* Description */}
@@ -188,18 +246,19 @@ export default function NewRequest() {
                                             Description
                                         </FieldLabel>
 
-                                        <Textarea
-                                            id="description"
-                                            name="description"
-                                            placeholder="Describe what the petty cash will be used for..."
-                                            className="min-h-32 resize-none"
-                                            required
-                                        />
-
                                         <FieldDescription className="text-xs text-muted-foreground">
                                             Provide enough detail for the request
                                             to be reviewed.
                                         </FieldDescription>
+
+                                        <Textarea
+                                            id="description"
+                                            placeholder="Describe what the petty cash will be used for..."
+                                            className="min-h-32 resize-none"
+                                            {...form.register("description")}
+                                        />
+
+                                        <ErrorField message={form.formState.errors.description?.message} />
                                     </Field>
                                 </FieldGroup>
                             </FieldSet>
@@ -313,17 +372,23 @@ export default function NewRequest() {
                 {/* Actions */}
                 <div className="mt-6 flex justify-end gap-3">
 
-                    <Button
+                    <LoadingButton
                         type="button"
                         variant="outline"
                         onClick={handleSaveDraft}
+                        loading={loading}
+                        loadingChildren="Saving draft..."
                     >
                         Save Draft
-                    </Button>
+                    </LoadingButton>
 
-                    <Button type="submit">
+                    <LoadingButton
+                        type="submit"
+                        loading={loading}
+                        loadingChildren="Submitting request..."
+                    >
                         Submit Request
-                    </Button>
+                    </LoadingButton>
                 </div>
             </form>
         </div>

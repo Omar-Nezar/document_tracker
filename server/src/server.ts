@@ -4,6 +4,7 @@ import cors from "cors"
 
 import adminRoutes from "./routes/admin.routes"
 import authRoutes from "./routes/auth.routes"
+import transactionRoutes from "./routes/transaction.routes"
 
 const app = express();
 app.use(express.json());
@@ -26,3 +27,4 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/admin", adminRoutes)
 app.use("/auth", authRoutes)
+app.use("/transaction", transactionRoutes)

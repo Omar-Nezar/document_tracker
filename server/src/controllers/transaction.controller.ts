@@ -75,13 +75,10 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
             ? "SUBMITTED"
             : "DRAFT";
 
-        /*
-         * Insert transaction
-         */
         const result = await db.transaction(async (tx) => {
             const year = new Date().getFullYear();
 
-            const counter = await tx
+            const [counter] = await tx
                 .insert(transactionCounters)
                 .values({
                     year,
@@ -97,58 +94,53 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
                     number: transactionCounters.lastNumber,
                 });
 
-            const sequenceNumber = counter[0].number;
+            if (!counter) {
+                throw new Error("Failed to generate transaction counter");
+            }
 
-            const transactionNumber = `PC-${year}-${Date.now()}-${sequenceNumber
+            const transactionNumber = `PC-${year}-${counter.number
                 .toString()
                 .padStart(6, "0")}`;
+
             const [transaction] = await tx
                 .insert(pettyCashTransactionsTable)
                 .values({
                     transactionNumber,
-
                     requesterId: userId,
-
                     departmentId: user.departmentId,
-
                     branchId: user.branchId,
-
                     categoryId: Number(categoryId),
-
                     amount: String(amount),
-
                     description: description.trim(),
-
                     status,
                 })
                 .returning();
+
+            if (!transaction) {
+                throw new Error("Failed to create transaction");
+            }
+
+            await tx
+                .insert(transactionStatusHistoryTable)
+                .values({
+                    transactionId: transaction.id,
+                    fromStatus: null,
+                    toStatus: status,
+                    changedBy: userId,
+                    comment: submit
+                        ? "Request submitted"
+                        : "Request saved as draft",
+                });
+
+            return transaction;
         });
 
-        /*
-         * Create initial history record.
-         */
-        await db
-            .insert(transactionStatusHistoryTable)
-            .values({
-                transactionId: transaction.id,
-
-                fromStatus: null,
-
-                toStatus: status,
-
-                changedBy: userId,
-
-                comment: submit
-                    ? "Request submitted"
-                    : "Request saved as draft",
-            });
 
         return res.status(201).json({
             message: submit
                 ? "Request submitted successfully"
                 : "Draft saved successfully",
-
-            transaction,
+            transaction: result,
         });
 
     } catch (error) {
@@ -161,4 +153,4 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
             message: "Internal server error",
         });
     }
-};
+}
