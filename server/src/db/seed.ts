@@ -8,6 +8,7 @@ import { db } from "@db";
 import {
     departmentsTable,
     branchesTable,
+    pettyCashCategoriesTable,
 } from "@schema";
 
 
@@ -86,6 +87,13 @@ const branches = [
     },
 ];
 
+const pettyCashCategories = [
+    { name: "Vehicle Expense" },
+    { name: "Office Supplies" },
+    { name: "Transportation" },
+    { name: "Emergency Expense" },
+    { name: "Miscellaneous" },
+]
 
 async function seed() {
     console.log("Seeding database...");
@@ -98,6 +106,11 @@ async function seed() {
     await db
         .insert(branchesTable)
         .values(branches)
+        .onConflictDoNothing();
+
+    await db
+        .insert(pettyCashCategoriesTable)
+        .values(pettyCashCategories)
         .onConflictDoNothing();
 
     console.log("Seed complete.");
