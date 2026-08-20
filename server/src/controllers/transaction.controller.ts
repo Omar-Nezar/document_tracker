@@ -113,6 +113,10 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
                     amount: String(amount),
                     description: description.trim(),
                     status,
+                    submittedAt:
+                        status === "SUBMITTED"
+                            ? sql`CURRENT_TIMESTAMP`
+                            : null,
                 })
                 .returning();
 
