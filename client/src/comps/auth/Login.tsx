@@ -56,6 +56,8 @@ export default function Login() {
             success: "Login successful",
             error: "Login failed",
         });
+        await promise;
+        navigate("/employeeHome");
     };
 
     return (
