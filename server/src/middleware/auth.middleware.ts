@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { getUserWithRoleByEmail } from "@/db/queries/user.queries";
-import { decodeAuthToken } from "@/shared/utils/decodeAuthToken";
+import { decodeAuthToken, type DecodedToken } from "@shared/utils/decodeAuthToken";
 
 export interface AuthRequest extends Request {
     user?: any;
@@ -22,8 +22,7 @@ export const protect = async (
                 return res.status(401).json({ message: "Not authorized, no token" });
             }
 
-            const decoded = decodeAuthToken(token)
-            console.log(decoded)
+            const decoded = decodeAuthToken(token) as DecodedToken;
             const user = await getUserWithRoleByEmail(decoded.email);
             if (!user) {
                 return res.status(401).json({ message: "User not found" });
