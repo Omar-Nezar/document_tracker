@@ -15,7 +15,7 @@ export default defineConfig({
   ],
   server: {
     host: true, // For testing on mobile with qr code
-    port: 5173,
+    port: 5172,
   },
   resolve: {
     alias: {
