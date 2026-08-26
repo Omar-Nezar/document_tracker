@@ -15,23 +15,5 @@ export const transactionDocumentsRelations = relations(
                 ],
             }
         ),
-
-        documentType: one(schema.documentTypesTable, {
-            fields: [
-                schema.transactionDocumentsTable.documentTypeId,
-            ],
-            references: [
-                schema.documentTypesTable.id,
-            ],
-        }),
-
-        uploader: one(schema.usersTable, {
-            fields: [
-                schema.transactionDocumentsTable.uploadedBy,
-            ],
-            references: [
-                schema.usersTable.id,
-            ],
-        }),
     })
 );
