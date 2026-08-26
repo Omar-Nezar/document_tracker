@@ -29,7 +29,7 @@ import {
     FieldSet,
 } from "@/components/ui/field"
 import { Separator } from "@/components/ui/separator"
-import { toast } from "@/components/ui/toast"
+import showToast from "@misc/showToast";
 
 import { CircleUserRound } from "lucide-react"
 
@@ -51,10 +51,10 @@ export default function Login() {
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const promise = dispatch(login(form)).unwrap();
-        toast.promise(promise, {
-            loading: "Logging in...",
-            success: "Login successful",
-            error: "Login failed",
+        showToast({
+            promise,
+            message: "Login successful",
+            description: "You have been successfully logged in",
         });
         await promise;
         navigate("/employeeHome");

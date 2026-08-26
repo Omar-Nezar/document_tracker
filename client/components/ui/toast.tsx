@@ -55,6 +55,30 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
   )
 }
 
+const toastTypeStyles: Record<string, string> = {
+  success: "border-emerald-500/40 bg-emerald-50 text-emerald-950 dark:border-emerald-400/40 dark:bg-emerald-950/40 dark:text-emerald-50",
+  error: "border-destructive/40 bg-red-50 text-red-950 dark:border-destructive/50 dark:bg-red-950/40 dark:text-red-50",
+  warning: "border-amber-500/40 bg-amber-50 text-amber-950 dark:border-amber-400/40 dark:bg-amber-950/40 dark:text-amber-50",
+  info: "border-sky-500/40 bg-sky-50 text-sky-950 dark:border-sky-400/40 dark:bg-sky-950/40 dark:text-sky-50",
+  loading: "border-sky-500/40 bg-sky-50 text-sky-950 dark:border-sky-400/40 dark:bg-sky-950/40 dark:text-sky-50",
+}
+
+const toastIconStyles: Record<string, string> = {
+  success: "text-emerald-600 dark:text-emerald-400",
+  error: "text-destructive",
+  warning: "text-amber-600 dark:text-amber-400",
+  info: "text-sky-600 dark:text-sky-400",
+  loading: "text-sky-600 dark:text-sky-400",
+}
+
+const toastActionStyles: Record<string, string> = {
+  success: "border-emerald-600/30 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:border-emerald-400/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50 dark:hover:text-emerald-200",
+  error: "border-destructive/30 text-destructive hover:bg-destructive/10 dark:border-destructive/50 dark:hover:bg-destructive/20",
+  warning: "border-amber-600/30 text-amber-700 hover:bg-amber-100 hover:text-amber-800 dark:border-amber-400/40 dark:text-amber-300 dark:hover:bg-amber-900/50 dark:hover:text-amber-200",
+  info: "border-sky-600/30 text-sky-700 hover:bg-sky-100 hover:text-sky-800 dark:border-sky-400/40 dark:text-sky-300 dark:hover:bg-sky-900/50 dark:hover:text-sky-200",
+  loading: "border-sky-600/30 text-sky-700 hover:bg-sky-100 hover:text-sky-800 dark:border-sky-400/40 dark:text-sky-300 dark:hover:bg-sky-900/50 dark:hover:text-sky-200",
+}
+
 function ToastContent({ className, ...props }: ToastPrimitive.Content.Props) {
   return (
     <ToastPrimitive.Content
@@ -91,16 +115,25 @@ function ToastDescription({
   )
 }
 
+type ToastActionProps = ToastPrimitive.Action.Props & {
+  toastType?: string
+}
+
 function ToastAction({
   className,
+  toastType,
   render = <Button variant="outline" size="sm" />,
   ...props
-}: ToastPrimitive.Action.Props) {
+}: ToastActionProps) {
   return (
     <ToastPrimitive.Action
       data-slot="toast-action"
       render={render}
-      className={cn("shrink-0", className)}
+      className={cn(
+        "shrink-0",
+        toastType ? toastActionStyles[toastType] : undefined,
+        className,
+      )}
       {...props}
     />
   )
@@ -170,7 +203,10 @@ function ToastIcon({ type }: { type: string | undefined }) {
   return (
     <span
       data-slot="toast-icon"
-      className="shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4"
+      className={cn(
+        "shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+        type ? toastIconStyles[type] : undefined,
+      )}
     >
       {icon}
     </span>
@@ -181,14 +217,18 @@ function ToastList() {
   const { toasts } = ToastPrimitive.useToastManager()
 
   return toasts.map((toastItem) => (
-    <Toast key={toastItem.id} toast={toastItem}>
+    <Toast
+      key={toastItem.id}
+      toast={toastItem}
+      className={toastItem.type ? toastTypeStyles[toastItem.type] : undefined}
+    >
       <ToastContent>
         <ToastIcon type={toastItem.type} />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <ToastTitle />
           <ToastDescription />
         </div>
-        <ToastAction />
+        <ToastAction toastType={toastItem.type} />
         <ToastClose />
       </ToastContent>
     </Toast>
