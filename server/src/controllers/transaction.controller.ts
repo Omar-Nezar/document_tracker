@@ -8,6 +8,7 @@ import {
     pettyCashTransactionsTable,
     transactionStatusHistoryTable,
     transactionCounters,
+    transactionDocumentsTable,
 } from "@schema";
 import { sql } from "drizzle-orm";
 
@@ -72,12 +73,15 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
         }
 
         const status = submit
-            ? "SUBMITTED"
-            : "DRAFT";
+            ? ("SUBMITTED" as const)
+            : ("DRAFT" as const);
 
         const result = await db.transaction(async (tx) => {
             const year = new Date().getFullYear();
 
+            /*
+             * Get the next transaction number.
+             */
             const [counter] = await tx
                 .insert(transactionCounters)
                 .values({
@@ -102,13 +106,16 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
                 .toString()
                 .padStart(6, "0")}`;
 
+            /*
+             * Create the transaction.
+             */
             const [transaction] = await tx
                 .insert(pettyCashTransactionsTable)
                 .values({
                     transactionNumber,
                     requesterId: userId,
-                    departmentId: user.departmentId,
-                    branchId: user.branchId,
+                    departmentId: user.departmentId!,
+                    branchId: user.branchId!,
                     categoryId: Number(categoryId),
                     amount: String(amount),
                     description: description.trim(),
@@ -124,6 +131,9 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
                 throw new Error("Failed to create transaction");
             }
 
+            /*
+             * Create the transaction status history.
+             */
             await tx
                 .insert(transactionStatusHistoryTable)
                 .values({
@@ -136,6 +146,32 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
                         : "Request saved as draft",
                 });
 
+            /*
+             * Upload the documents.
+             */
+            const files = req.files as Express.Multer.File[];
+            if (
+                files &&
+                files.length > 0
+            ) {
+
+                await tx
+                    .insert(
+                        transactionDocumentsTable
+                    )
+                    .values(
+                        files.map(
+                            (file) => ({
+                                transactionId: transaction.id,
+                                originalName: file.originalname,
+                                storedName: file.filename,
+                                mimeType: file.mimetype,
+                                fileSize: file.size,
+                                filePath: file.path,
+                            })
+                        )
+                    );
+            }
             return transaction;
         });
 

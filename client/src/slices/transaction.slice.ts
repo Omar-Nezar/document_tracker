@@ -50,16 +50,56 @@ export const createTransaction = createAsyncThunk<
         message: string;
         transaction: Transaction;
     },
-    CreateTransactionPayload,
+    {
+        data: CreateTransactionPayload;
+        files: File[];
+    },
     {
         rejectValue: string;
     }
 >(
     "transactions/create",
-    async (data, { rejectWithValue }) => {
+
+    async (
+        {
+            data,
+            files,
+        },
+        { rejectWithValue }
+    ) => {
         try {
-            const res = await API.post("/transaction/create", data);
+            const formData = new FormData();
+
+            formData.append(
+                "amount",
+                String(data.amount)
+            );
+
+            formData.append(
+                "categoryId",
+                String(data.categoryId)
+            );
+
+            formData.append(
+                "description",
+                data.description
+            );
+
+            formData.append(
+                "submit",
+                String(data.submit)
+            );
+
+            files.forEach((file) => {
+                formData.append(
+                    "documents",
+                    file
+                );
+            });
+
+            const res = await API.post("/transaction/create", formData);
             return res.data;
+            
         } catch (error: any) {
             return rejectWithValue(
                 error.response?.data?.message ||

@@ -31,6 +31,7 @@ import {
     FieldDescription,
 } from "@/components/ui/field";
 import ErrorField from "@/src/comps/misc/ErrorField";
+import showToast from "@misc/showToast";
 
 import {
     FileText,
@@ -92,26 +93,48 @@ export default function NewRequest() {
         );
     };
 
-    const handleSubmit = (
-        data: CreateTransactionForm
-    ) => {
-        dispatch(
+    const handleSubmit = async (data: CreateTransactionForm) => {
+        const promise = dispatch(
             createTransaction({
-                ...data,
-                submit: true,
+                data: {
+                    ...data,
+                    submit: true,
+                },
+                files: files.map(
+                    ({ file }) => file
+                ),
+
             })
         );
+        showToast({
+            promise,
+            message: "Request submitted successfully",
+            description: "You have successfully submitted a petty cash request",
+        });
+        await promise;
     };
 
-    const handleSaveDraft = () => {
+    const handleSaveDraft = async () => {
         const data = form.getValues();
 
-        dispatch(
+        const promise = dispatch(
             createTransaction({
-                ...data,
-                submit: false,
+                data: {
+                    ...data,
+                    submit: true,
+                },
+                files: files.map(
+                    ({ file }) => file
+                ),
+
             })
         );
+        showToast({
+            promise,
+            message: "Request submitted successfully",
+            description: "You have successfully submitted a petty cash request",
+        });
+        await promise;
     };
 
     const categoryLabels: Record<number, string> = {
