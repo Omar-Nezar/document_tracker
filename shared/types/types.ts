@@ -1,4 +1,6 @@
 // types that are shared between backed and frontend should go here
-import type { PettyCashTransaction } from '../../server/src/db/schema/pettyCashTransactions.schema';
+import type { PettyCashTransaction } from '../../server/src/db/schema/';
+import type { UserTransaction } from '../../server/src/db/queries/transaction.queries';
 
 export type Transaction = PettyCashTransaction;
+export type UTransaction = UserTransaction;

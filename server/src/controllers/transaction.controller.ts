@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { eq } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import type { AuthRequest } from "@/middleware/auth.middleware";
 
 import { db } from "@db";
@@ -9,8 +9,12 @@ import {
     transactionStatusHistoryTable,
     transactionCounters,
     transactionDocumentsTable,
+    // departmentsTable,
+    // branchesTable,
+    // pettyCashCategoriesTable,
 } from "@schema";
-import { sql } from "drizzle-orm";
+
+import { getUserTransactionsByUserId } from "@/db/queries/transaction.queries";
 
 export const createTransaction = async (req: AuthRequest, res: Response) => {
     try {
@@ -186,6 +190,35 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
     } catch (error) {
         console.error(
             "Create transaction error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export const getUserTransactions = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Unauthorized",
+            });
+        }
+
+        const transactions = await getUserTransactionsByUserId(userId);
+
+        return res.status(200).json({
+            message: "Transactions retrieved successfully",
+            transactions,
+        });
+
+    } catch (error) {
+        console.error(
+            "Get transactions error:",
             error
         );
 

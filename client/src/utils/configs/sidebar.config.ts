@@ -1,8 +1,9 @@
 // config/sidebarConfig.ts
-import { 
+import {
   Home,
-  FilePlusCorner, 
-  type LucideIcon 
+  FilePlusCorner,
+  Table2,
+  type LucideIcon
 } from "lucide-react"
 
 export interface NavItem {
@@ -24,13 +25,14 @@ export const sidebarConfig: SidebarConfig = {
     items: [
       { label: "Dashboard", to: "/employeeHome", icon: Home },
       { label: "Requests", to: "/addRequest", icon: FilePlusCorner },
+      { label: "My Transactions", to: "/manageTransactions", icon: Table2 },
     ],
   },
-//   Organization: {
-//     label: "Organization",
-//     items: [
-//       { label: "Projects", to: "/projects", icon: Briefcase },
-//       { label: "Settings", to: "/settings", icon: Settings },
-//     ],
-//   },
+  //   Organization: {
+  //     label: "Organization",
+  //     items: [
+  //       { label: "Projects", to: "/projects", icon: Briefcase },
+  //       { label: "Settings", to: "/settings", icon: Settings },
+  //     ],
+  //   },
 }

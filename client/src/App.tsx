@@ -7,6 +7,7 @@ import Login from './comps/auth/Login'
 // Employee imports
 import EmployeeHome from './comps/employee/EmployeeHome'
 import AddRequest from './comps/employee/AddRequest'
+import ManageTransactions from './comps/employee/ManageTransactions'
 
 // Admin imports
 import AdminHome from './comps/admin/AdminHome'
@@ -32,6 +33,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/employeeHome" element={<EmployeeHome />} />
           <Route path="/addRequest" element={<AddRequest />} />
+          <Route path="/manageTransactions" element={<ManageTransactions />} />
         </Route>
         {/* Admin Routes */}
 

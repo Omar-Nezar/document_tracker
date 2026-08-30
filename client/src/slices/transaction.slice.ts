@@ -2,7 +2,7 @@ import {
     createAsyncThunk,
     createSlice,
 } from "@reduxjs/toolkit";
-import type { Transaction } from "@shared/types/types";
+import type { Transaction, UTransaction } from "@shared/types/types";
 import type { CreateTransactionForm } from "@shared/schemas/transaction.schema";
 import API from "./api";
 
@@ -29,20 +29,18 @@ interface CreateTransactionPayload extends CreateTransactionForm {
 }
 
 interface TransactionState {
-    transactions: Transaction[];
-    currentTransaction: Transaction | null;
+    transactions: UTransaction[];
     loading: boolean;
     error: string | null;
-    success: string | null;
+    msg: string | null;
 }
 
 
 const initialState: TransactionState = {
     transactions: [],
-    currentTransaction: null,
     loading: false,
     error: null,
-    success: null,
+    msg: null,
 };
 
 export const createTransaction = createAsyncThunk<
@@ -99,7 +97,7 @@ export const createTransaction = createAsyncThunk<
 
             const res = await API.post("/transaction/create", formData);
             return res.data;
-            
+
         } catch (error: any) {
             return rejectWithValue(
                 error.response?.data?.message ||
@@ -109,13 +107,25 @@ export const createTransaction = createAsyncThunk<
     }
 );
 
+export const getUserTransactions = createAsyncThunk(
+    "transactions/getUserTransactions",
+    async () => {
+        try {
+            const res = await API.get("/transaction/getUserTransactions");
+            return res.data;
+        } catch (error: any) {
+            return error.response?.data?.message || "Failed to retrieve transactions";
+        }
+    }
+)
+
 const transactionSlice = createSlice({
     name: "transactions",
     initialState,
     reducers: {
         clearTransactionMessages: (state) => {
             state.error = null;
-            state.success = null;
+            state.msg = null;
         },
     },
     extraReducers: (builder) => {
@@ -124,19 +134,32 @@ const transactionSlice = createSlice({
             .addCase(createTransaction.pending, (state) => {
                 state.loading = true;
                 state.error = null;
-                state.success = null;
+                state.msg = null;
             })
             .addCase(createTransaction.fulfilled, (state, action) => {
                 state.loading = false;
-                state.currentTransaction = action.payload.transaction;
-                state.transactions.unshift(action.payload.transaction);
-                state.success = action.payload.message;
+                state.msg = action.payload.message;
             })
             .addCase(createTransaction.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to create request";
-            }
-            );
+            });
+        builder
+            // GET USER TRANSACTIONS
+            .addCase(getUserTransactions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.msg = null;
+            })
+            .addCase(getUserTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.transactions = action.payload.transactions;
+                state.msg = action.payload.message;
+            })
+            .addCase(getUserTransactions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || "Failed to retrieve transactions";
+            });
     },
 });
 
