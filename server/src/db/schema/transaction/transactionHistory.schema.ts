@@ -14,7 +14,7 @@ export const transactionStatusHistoryTable = pgTable(
         id: serial("id")
             .primaryKey(),
         transactionId: integer("transaction_id")
-            .references(() => pettyCashTransactionsTable.id)
+            .references(() => pettyCashTransactionsTable.id, { onDelete: "cascade" })
             .notNull(),
         fromStatus: transactionStatusEnum("from_status"),
         toStatus: transactionStatusEnum("to_status")

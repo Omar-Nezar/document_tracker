@@ -4,16 +4,18 @@ import {
     pettyCashTransactionsTable,
     transactionDocumentsTable,
     pettyCashCategoriesTable,
+    transactionStatusHistoryTable
 } from "@schema";
 
 export const getUserTransactionsByUserId = async (userId: number) => {
     return db
         .select({
+            id: pettyCashTransactionsTable.id,
             transactionNumber: pettyCashTransactionsTable.transactionNumber,
             category: pettyCashCategoriesTable.name,
             amount: pettyCashTransactionsTable.amount,
             description: pettyCashTransactionsTable.description,
-            status: pettyCashTransactionsTable.status,
+            status: transactionStatusHistoryTable.toStatus,
             submittedAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.submittedAt}, 'YYYY-MM-DD')`,
             createdAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.createdAt}, 'YYYY-MM-DD')`,
             documents: sql<string[]>`
@@ -42,6 +44,14 @@ export const getUserTransactionsByUserId = async (userId: number) => {
             )
         )
 
+        .leftJoin(
+            transactionStatusHistoryTable,
+            eq(
+                pettyCashTransactionsTable.id,
+                transactionStatusHistoryTable.transactionId
+            )
+        )
+
         .where(
             eq(
                 pettyCashTransactionsTable.requesterId,
@@ -55,7 +65,7 @@ export const getUserTransactionsByUserId = async (userId: number) => {
             pettyCashCategoriesTable.name,
             pettyCashTransactionsTable.amount,
             pettyCashTransactionsTable.description,
-            pettyCashTransactionsTable.status,
+            transactionStatusHistoryTable.toStatus,
             pettyCashTransactionsTable.submittedAt,
             pettyCashTransactionsTable.createdAt
         )

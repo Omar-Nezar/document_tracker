@@ -1,5 +1,10 @@
 import type { Request, Response } from "express";
-import { eq, desc, sql } from "drizzle-orm";
+import {
+    eq,
+    desc,
+    sql,
+    and,
+} from "drizzle-orm";
 import type { AuthRequest } from "@/middleware/auth.middleware";
 
 import { db } from "@db";
@@ -219,6 +224,53 @@ export const getUserTransactions = async (req: AuthRequest, res: Response) => {
     } catch (error) {
         console.error(
             "Get transactions error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export const deleteTransaction = async (req: AuthRequest, res: Response) => {
+    try {
+        const transactionId = Number(req.params.transactionId);
+        const userId = req.user.userId;
+
+        await db.transaction(async (tx) => {
+            const [transaction] = await tx
+                .select({
+                    id: pettyCashTransactionsTable.id,
+                    status: pettyCashTransactionsTable.status,
+                })
+                .from(pettyCashTransactionsTable)
+                .where(
+                    and(
+                        eq(pettyCashTransactionsTable.id, transactionId),
+                        eq(pettyCashTransactionsTable.requesterId, userId),
+                        eq(pettyCashTransactionsTable.status, "DRAFT")
+                    )
+                )
+                .limit(1);
+
+            if (!transaction) {
+                throw new Error("TRANSACTION_NOT_FOUND");
+            }
+
+            await tx
+                .delete(pettyCashTransactionsTable)
+                .where(
+                    eq(pettyCashTransactionsTable.id, transactionId)
+                );
+        });
+
+        return res.status(200).json({
+            message: "Transaction deleted successfully",
+        });
+    } catch (error) {
+        console.error(
+            "Delete transaction error:",
             error
         );
 

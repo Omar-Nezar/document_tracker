@@ -119,6 +119,18 @@ export const getUserTransactions = createAsyncThunk(
     }
 )
 
+export const deleteTransaction = createAsyncThunk(
+    "transactions/deleteTransaction",
+    async (transactionId: number) => {
+        try {
+            const res = await API.delete(`/transaction/deleteTransaction/${transactionId}`);
+            return res.data;
+        } catch (error: any) {
+            return error.response?.data?.message || "Failed to delete transaction";
+        }
+    }
+);
+
 const transactionSlice = createSlice({
     name: "transactions",
     initialState,
@@ -159,6 +171,22 @@ const transactionSlice = createSlice({
             .addCase(getUserTransactions.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string || "Failed to retrieve transactions";
+            });
+        builder
+            // DELETE TRANSACTION
+            .addCase(deleteTransaction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.msg = null;
+            })
+            .addCase(deleteTransaction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload.message;
+                state.transactions = state.transactions.filter((transaction) => transaction.id !== action.meta.arg);
+            })
+            .addCase(deleteTransaction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || "Failed to delete transaction";
             });
     },
 });

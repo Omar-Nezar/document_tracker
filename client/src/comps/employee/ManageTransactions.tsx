@@ -1,9 +1,12 @@
 import { type UTransaction } from "@shared/types/types";
 import { useAppDispatch, useAppSelector } from "@/src/store/store";
-import { getUserTransactions } from "@/src/slices/transaction.slice";
+import { getUserTransactions, deleteTransaction } from "@/src/slices/transaction.slice";
 import { useEffect } from "react";
 import { badgeMapping } from "@/src/utils/other/badgeMapping";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import FilesDialog from "@misc/FilesDialog";
+import showToast from "@misc/showToast";
 
 import {
     columnFilteringFeature,
@@ -81,101 +84,9 @@ const features = tableFeatures({
 })
 
 const columnHelper = createColumnHelper<typeof features, UTransaction>()
-const columns = columnHelper.columns([
-
-    columnHelper.accessor('transactionNumber', {
-        header: 'Transaction Number',
-        cell: (info) => info.getValue(),
-    }),
-
-    columnHelper.accessor('category', {
-        header: 'Category',
-        cell: (info) => info.getValue(),
-    }),
-
-    columnHelper.accessor('amount', {
-        header: 'Amount',
-        cell: (info) => info.getValue(),
-    }),
-
-    columnHelper.accessor('description', {
-        header: 'Description',
-        cell: (info) => info.getValue(),
-    }),
-
-    columnHelper.accessor('status', {
-        header: 'Status',
-        cell: (info) =>
-            <Badge variant={badgeMapping[info.getValue()].variant} className={cn(badgeMapping[info.getValue()].className, "text-xs w-20")}>
-                {info.getValue()}
-            </Badge>,
-    }),
-
-    columnHelper.accessor('documents', {
-        header: 'Files',
-        cell: (info) => {
-            const files = info.getValue() as string[] | undefined;
-
-            if (!files || files.length === 0) return '—';
-
-            return (
-                <div className="max-w-40 truncate">
-                    {files.join(', ')}
-                </div>
-            );
-        },
-    }),
-
-    columnHelper.accessor('submittedAt', {
-        header: 'Submitted At',
-        cell: (info) => !info.getValue()
-            ? '—'
-            : info.getValue(),
-    }),
-
-    columnHelper.accessor('createdAt', {
-        header: 'Created At',
-        cell: (info) => info.getValue(),
-    }),
-
-    columnHelper.display({
-        id: 'actions',
-        header: 'Actions',
-        cell: ({ row }) => {
-            const rowData = row.original;
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger render={
-                        <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <ChevronsUpDown className="h-4 w-4" />
-                        </Button>
-                    }
-                    />
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                            onClick={() => console.log('Edit clicked for:', rowData)}
-                            className="cursor-pointer"
-                        >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            <span>Edit</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => console.log('Delete clicked for:', rowData)}
-                            className="cursor-pointer text-destructive focus:text-destructive"
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Delete</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    })
-])
 
 export default function ManageTransactions() {
+    const [selectedTransaction, setSelectedTransaction] = useState<UTransaction | null>(null);
     const dispatch = useAppDispatch();
     const { transactions, loading } = useAppSelector(
         (state: any) => state.transaction
@@ -185,6 +96,122 @@ export default function ManageTransactions() {
     useEffect(() => {
         dispatch(getUserTransactions());
     }, [dispatch]);
+
+    const handleDeleteTransaction = async (transactionId: number) => {
+        const promise = dispatch(deleteTransaction(transactionId)).unwrap();
+        showToast({
+            promise,
+            message: "Transaction deleted successfully",
+            description: "Draft successfully deleted",
+        });
+        await promise;
+    }
+
+    const columns = columnHelper.columns([
+
+        columnHelper.accessor('transactionNumber', {
+            header: 'Transaction Number',
+            cell: (info) => info.getValue(),
+        }),
+
+        columnHelper.accessor('category', {
+            header: 'Category',
+            cell: (info) => info.getValue(),
+        }),
+
+        columnHelper.accessor('amount', {
+            header: 'Amount',
+            cell: (info) => info.getValue(),
+        }),
+
+        columnHelper.accessor('description', {
+            header: 'Description',
+            cell: (info) => info.getValue(),
+        }),
+
+        columnHelper.accessor('status', {
+            header: 'Status',
+            cell: (info) =>
+                <Badge variant={badgeMapping[info.getValue()].variant} className={cn(badgeMapping[info.getValue()].className, "text-xs w-20")}>
+                    {info.getValue()}
+                </Badge>,
+        }),
+
+        columnHelper.accessor('documents', {
+            header: 'Files',
+            cell: (info) => {
+                const files = info.getValue() as string[] | undefined;
+
+                if (!files || files.length === 0) return '—';
+
+                return (
+                    <div className="flex max-w-25 flex-col gap-1">
+                        {files.map((file, index) => (
+                            <div
+                                key={`${file}-${index}`}
+                                className="truncate"
+                                title={file}
+                            >
+                                {file}
+                            </div>
+                        ))}
+                    </div>
+                );
+            },
+        }),
+
+        columnHelper.accessor('submittedAt', {
+            header: 'Submitted At',
+            cell: (info) => !info.getValue()
+                ? '—'
+                : info.getValue(),
+        }),
+
+        columnHelper.accessor('createdAt', {
+            header: 'Created At',
+            cell: (info) => info.getValue(),
+        }),
+
+        columnHelper.display({
+            id: 'actions',
+            header: 'Actions',
+            cell: ({ row }) => {
+                const rowData = row.original;
+
+                if (rowData.status !== 'DRAFT') {
+                    return "—"
+                }
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger render={
+                            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <ChevronsUpDown className="h-4 w-4" />
+                            </Button>
+                        }
+                        />
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                                onClick={() => console.log('Edit clicked for:', rowData)}
+                                className="cursor-pointer"
+                            >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                <span>Edit</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => handleDeleteTransaction(rowData.id)}
+                                className="cursor-pointer text-destructive focus:text-destructive"
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                <span>Delete</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        })
+    ])
 
     const table = useTable(
         {
@@ -257,9 +284,20 @@ export default function ManageTransactions() {
                             </TableRow>
                         ) : (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow className="border-muted-foreground" key={row.id}>
+                                <TableRow
+                                    className="border-muted-foreground cursor-pointer hover:bg-muted/50"
+                                    key={row.id}
+                                    onClick={() => setSelectedTransaction(row.original)}
+                                >
                                     {row.getAllCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell
+                                            key={cell.id}
+                                            onClick={(e) => {
+                                                if (cell.column.id === "actions") {
+                                                    e.stopPropagation();
+                                                }
+                                            }}
+                                        >
                                             <table.FlexRender cell={cell} />
                                         </TableCell>
                                     ))}
@@ -282,7 +320,7 @@ export default function ManageTransactions() {
                                 value={`${table.state.pagination.pageSize}`}
                                 onValueChange={(value) => table.setPageSize(Number(value))}
                             >
-                                <SelectTrigger size="sm" className="w-[70px]">
+                                <SelectTrigger size="sm" className="w-17.5">
                                     <SelectValue
                                         placeholder={`${table.state.pagination.pageSize}`}
                                     />
@@ -344,6 +382,10 @@ export default function ManageTransactions() {
                             </Button>
                         </div>
                     </div>
+                    <FilesDialog
+                        selectedTransaction={selectedTransaction}
+                        onClose={() => setSelectedTransaction(null)}
+                    />
                 </div>
             </div>
         </>

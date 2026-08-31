@@ -3,6 +3,7 @@ import { protect } from "@/middleware/auth.middleware";
 import {
     createTransaction,
     getUserTransactions,
+    deleteTransaction,
 } from "@/controllers/transaction.controller";
 import { uploadDocuments } from "@/middleware/upload.middleware";
 
@@ -16,5 +17,6 @@ router.post("/create", protect,
     createTransaction
 );
 router.get("/getUserTransactions", protect, getUserTransactions);
+router.delete("/deleteTransaction/:transactionId", protect, deleteTransaction);
 
 export default router;
