@@ -3,6 +3,7 @@ import {
   Home,
   FilePlusCorner,
   Table2,
+  UsersRound,
   type LucideIcon
 } from "lucide-react"
 
@@ -28,11 +29,11 @@ export const sidebarConfig: SidebarConfig = {
       { label: "My Transactions", to: "/manageTransactions", icon: Table2 },
     ],
   },
-  //   Organization: {
-  //     label: "Organization",
-  //     items: [
-  //       { label: "Projects", to: "/projects", icon: Briefcase },
-  //       { label: "Settings", to: "/settings", icon: Settings },
-  //     ],
-  //   },
+  Admin: {
+    label: "Admin Management",
+    items: [
+      { label: "Users", to: "/manageUsers", icon: UsersRound },
+      { label: "Transactions", to: "/manageTransactions", icon: Table2 },
+    ],
+  },
 }
