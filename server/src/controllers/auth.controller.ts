@@ -63,13 +63,15 @@ export const login = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, departmentId, branchId } = req.body;
         const hashed = await hashPassword(password);
 
         await db.insert(usersTable).values({
             name,
             email,
             password: hashed,
+            departmentId,
+            branchId,
         });
     } catch (error) {
         console.error("Register error:", error);

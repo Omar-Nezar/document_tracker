@@ -1,5 +1,5 @@
 // This file is used to seed the database with initial data.
-// Run: npm run db:seed
+// Run: "npm run db:seed"
 
 import "dotenv/config";
 

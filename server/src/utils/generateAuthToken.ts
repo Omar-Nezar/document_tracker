@@ -10,6 +10,7 @@ export const generateAuthToken = (user: UserWithRole) => {
         const token = jwt.sign(
             {
                 userId: user.id,
+                name: user.name,
                 email: user.email,
                 role: user.role.name,
             },
