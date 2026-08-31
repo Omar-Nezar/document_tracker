@@ -14,6 +14,19 @@ export const login = createAsyncThunk(
     }
 );
 
+export const logOut = createAsyncThunk(
+    "auth/logout",
+    async (_, thunkAPI) => {
+        try {
+            localStorage.removeItem("authToken");
+            thunkAPI.dispatch(resetAuth());
+            return true;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Logout failed");
+        }
+    }
+);
+
 interface AuthState {
     token: any;
     loading: boolean;
