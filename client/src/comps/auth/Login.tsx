@@ -166,8 +166,8 @@ export default function Login() {
                             </FieldGroup>
                         </FieldSet>
                     </form>
-
-                    <div className="mt-2 flex items-center gap-3">
+                    {/* Register option not required for internal application */}
+                    {/* <div className="mt-2 flex items-center gap-3">
                         <Separator className="flex-1" />
                         <span className="text-xs uppercase text-muted-foreground tracking-wider font-medium">
                             Or
@@ -186,7 +186,7 @@ export default function Login() {
                                 <Link to="/register">Create account</Link>
                             }>
                         </Button>
-                    </div>
+                    </div> */}
                 </CardContent>
             </Card>
         </div>
