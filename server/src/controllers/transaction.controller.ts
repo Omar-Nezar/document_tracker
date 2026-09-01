@@ -19,7 +19,10 @@ import {
     // pettyCashCategoriesTable,
 } from "@schema";
 
-import { getUserTransactionsByUserId } from "@/db/queries/transaction.queries";
+import {
+    getUserTransactionsByUserId,
+    getAllTransactions
+} from "@/db/queries/transaction.queries";
 
 export const createTransaction = async (req: AuthRequest, res: Response) => {
     try {
@@ -76,8 +79,7 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
 
         if (!user.departmentId || !user.branchId) {
             return res.status(400).json({
-                message:
-                    "User must have a department and branch",
+                message: "User must have a department and branch",
             });
         }
 
@@ -232,6 +234,35 @@ export const getUserTransactions = async (req: AuthRequest, res: Response) => {
     }
 }
 
+export const getTransactions = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.user?.userId;
+
+        if (!userId) {
+            return res.status(401).json({
+                message: "Unauthorized",
+            });
+        }
+
+        const transactions = await getAllTransactions();
+
+        return res.status(200).json({
+            message: "Transactions retrieved successfully",
+            transactions,
+        });
+
+    } catch (error) {
+        console.error(
+            "Get transactions error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
 export const deleteTransaction = async (req: AuthRequest, res: Response) => {
     try {
         const transactionId = Number(req.params.transactionId);
@@ -250,6 +281,47 @@ export const deleteTransaction = async (req: AuthRequest, res: Response) => {
                         eq(pettyCashTransactionsTable.requesterId, userId),
                         eq(pettyCashTransactionsTable.status, "DRAFT")
                     )
+                )
+                .limit(1);
+
+            if (!transaction) {
+                throw new Error("TRANSACTION_NOT_FOUND");
+            }
+
+            await tx
+                .delete(pettyCashTransactionsTable)
+                .where(
+                    eq(pettyCashTransactionsTable.id, transactionId)
+                );
+        });
+
+        return res.status(200).json({
+            message: "Transaction deleted successfully",
+        });
+    } catch (error) {
+        console.error(
+            "Delete transaction error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export const deleteTransactionAdmin = async (req: AuthRequest, res: Response) => {
+    try {
+        const transactionId = Number(req.params.transactionId);
+
+        await db.transaction(async (tx) => {
+            const [transaction] = await tx
+                .select({
+                    id: pettyCashTransactionsTable.id,
+                })
+                .from(pettyCashTransactionsTable)
+                .where(
+                    eq(pettyCashTransactionsTable.id, transactionId),
                 )
                 .limit(1);
 

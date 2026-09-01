@@ -1,9 +1,15 @@
 import { Router } from "express";
-import { protect } from "@/middleware/auth.middleware";
+import {
+    protect,
+    employeeOnly,
+    adminOnly,
+} from "@/middleware/auth.middleware";
 import {
     createTransaction,
     getUserTransactions,
+    getTransactions,
     deleteTransaction,
+    deleteTransactionAdmin,
 } from "@/controllers/transaction.controller";
 import { uploadDocuments } from "@/middleware/upload.middleware";
 
@@ -16,7 +22,9 @@ router.post("/create", protect,
     ),
     createTransaction
 );
-router.get("/getUserTransactions", protect, getUserTransactions);
-router.delete("/deleteTransaction/:transactionId", protect, deleteTransaction);
+router.get("/getUserTransactions", protect, employeeOnly, getUserTransactions);
+router.get("/getTransactions", protect, adminOnly, getTransactions);
+router.delete("/deleteTransaction/:transactionId", protect, employeeOnly, deleteTransaction);
+router.delete("/deleteTransactionAdmin/:transactionId", protect, adminOnly, deleteTransactionAdmin);
 
 export default router;

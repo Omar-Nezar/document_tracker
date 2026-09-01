@@ -33,7 +33,7 @@ export const sidebarConfig: SidebarConfig = {
     label: "Admin Management",
     items: [
       { label: "Users", to: "/manageUsers", icon: UsersRound },
-      { label: "Transactions", to: "/manageTransactions", icon: Table2 },
+      { label: "Transactions", to: "/manageAllTransactions", icon: Table2 },
     ],
   },
 }

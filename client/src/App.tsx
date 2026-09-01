@@ -11,6 +11,7 @@ import ManageTransactions from './comps/employee/ManageTransactions'
 
 // Admin imports
 import AdminHome from './comps/admin/AdminHome'
+import ManageAllTransactions from './comps/admin/ManageAllTransactions'
 
 // Misc imports
 import ThemeButton from './comps/misc/ThemeButton'
@@ -37,9 +38,12 @@ function App() {
         </Route>
         {/* Admin Routes */}
 
-        <Route path="/adminhome" element={<AdminHome />} />
-        {/* <Route path="/manageUsers" element={<ManageUsers />} />
+        <Route element={<Layout />}>
+          <Route path="/adminhome" element={<AdminHome />} />
+          <Route path="/manageAllTransactions" element={<ManageAllTransactions />} />
+          {/* <Route path="/manageUsers" element={<ManageUsers />} />
             <Route path="/auditlogs" element={<AuditLogs />} /> */}
+        </Route>
       </Routes>
       <Toaster />
       <ThemeButton />

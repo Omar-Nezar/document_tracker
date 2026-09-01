@@ -101,34 +101,56 @@ export const createTransaction = createAsyncThunk<
             return res.data;
 
         } catch (error: any) {
-            return rejectWithValue(
-                error.response?.data?.message ||
-                "Failed to create request"
-            );
+            return rejectWithValue(error.response?.data?.message || "Failed to create request");
         }
     }
 );
 
 export const getUserTransactions = createAsyncThunk(
     "transactions/getUserTransactions",
-    async () => {
+    async (_, { rejectWithValue }) => {
         try {
             const res = await API.get("/transaction/getUserTransactions");
             return res.data;
         } catch (error: any) {
-            return error.response?.data?.message || "Failed to retrieve transactions";
+            return rejectWithValue(error.response?.data?.message || "Failed to retrieve transactions");
+        }
+    }
+)
+
+export const getTransactions = createAsyncThunk(
+    "transactions/getTransactions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await API.get("/transaction/getTransactions");
+            console.log(res.data);
+            return res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Failed to retrieve transactions");
         }
     }
 )
 
 export const deleteTransaction = createAsyncThunk(
     "transactions/deleteTransaction",
-    async (transactionId: number) => {
+    async (transactionId: number, { rejectWithValue }) => {
         try {
             const res = await API.delete(`/transaction/deleteTransaction/${transactionId}`);
             return res.data;
         } catch (error: any) {
-            return error.response?.data?.message || "Failed to delete transaction";
+            return rejectWithValue(error.response?.data?.message || "Failed to delete transaction");
+        }
+    }
+);
+
+export const deleteTransactionAdmin = createAsyncThunk(
+    "transactions/deleteTransactionAdmin",
+    async (transactionId: number, { rejectWithValue }) => {
+        try {
+            const res = await API.delete(`/transaction/deleteTransactionAdmin/${transactionId}`);
+            return res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Failed to delete transaction");
         }
     }
 );
@@ -175,6 +197,22 @@ const transactionSlice = createSlice({
                 state.error = action.payload as string || "Failed to retrieve transactions";
             });
         builder
+            // GET TRANSACTIONS
+            .addCase(getTransactions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.msg = null;
+            })
+            .addCase(getTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.transactions = action.payload.transactions;
+                state.msg = action.payload.message;
+            })
+            .addCase(getTransactions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || "Failed to retrieve transactions";
+            });
+        builder
             // DELETE TRANSACTION
             .addCase(deleteTransaction.pending, (state) => {
                 state.loading = true;
@@ -187,6 +225,22 @@ const transactionSlice = createSlice({
                 state.transactions = state.transactions.filter((transaction) => transaction.id !== action.meta.arg);
             })
             .addCase(deleteTransaction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || "Failed to delete transaction";
+            });
+        builder
+            // DELETE TRANSACTION ADMIN
+            .addCase( deleteTransactionAdmin.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.msg = null;
+            })
+            .addCase(deleteTransactionAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload.message;
+                state.transactions = state.transactions.filter((transaction) => transaction.id !== action.meta.arg);
+            })
+            .addCase(deleteTransactionAdmin.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string || "Failed to delete transaction";
             });
