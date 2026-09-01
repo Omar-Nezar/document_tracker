@@ -42,10 +42,21 @@ export const adminOnly = (
     res: Response,
     next: NextFunction
 ) => {
-    if (req.user && req.user.role === "admin") {
+    if (req.user && req.user.role === "Admin") {
         next();
     } else {
-        console.log("here")
         return res.status(403).json({ message: "Admin access required" });
+    }
+};
+
+export const employeeOnly = (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    if (req.user && req.user.role === "Employee") {
+        next();
+    } else {
+        return res.status(403).json({ message: "Employee access required" });
     }
 };
