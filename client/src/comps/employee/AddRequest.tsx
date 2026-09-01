@@ -105,7 +105,7 @@ export default function NewRequest() {
                 ),
 
             })
-        );
+        ).unwrap();
         showToast({
             promise,
             message: "Request submitted successfully",
@@ -128,7 +128,7 @@ export default function NewRequest() {
                 ),
 
             })
-        );
+        ).unwrap();
         showToast({
             promise,
             message: "Draft saved successfully",
