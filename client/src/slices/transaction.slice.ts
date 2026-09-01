@@ -24,6 +24,8 @@ import API from "./api";
 //     updatedAt: string;
 // }
 
+export type UTransactionPartial = Partial<UTransaction>;
+
 interface CreateTransactionPayload extends CreateTransactionForm {
     submit: boolean;
 }
