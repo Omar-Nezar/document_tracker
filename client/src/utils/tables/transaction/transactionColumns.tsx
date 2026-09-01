@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { badgeMapping } from "@/src/utils/other/badgeMapping"
 import { transactionTableFeatures } from "./transactionTableFeatures"
 
-const columnHelper = createColumnHelper<typeof transactionTableFeatures, UTransaction>()
+export const columnHelper = createColumnHelper<typeof transactionTableFeatures, UTransaction>()
 
 export const transactionColumns = [
     columnHelper.accessor("transactionNumber", {
