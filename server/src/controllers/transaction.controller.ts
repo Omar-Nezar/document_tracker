@@ -81,7 +81,7 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        const status = submit
+        const status = submit === "true"
             ? ("SUBMITTED" as const)
             : ("DRAFT" as const);
 
@@ -183,7 +183,6 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
             }
             return transaction;
         });
-
 
         return res.status(201).json({
             message: submit

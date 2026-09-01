@@ -121,7 +121,7 @@ export default function NewRequest() {
             createTransaction({
                 data: {
                     ...data,
-                    submit: true,
+                    submit: false,
                 },
                 files: files.map(
                     ({ file }) => file
@@ -131,8 +131,8 @@ export default function NewRequest() {
         );
         showToast({
             promise,
-            message: "Request submitted successfully",
-            description: "You have successfully submitted a petty cash request",
+            message: "Draft saved successfully",
+            description: "You have successfully saved a petty cash request draft",
         });
         await promise;
     };
