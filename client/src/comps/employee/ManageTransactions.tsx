@@ -6,6 +6,7 @@ import showToast from "@misc/showToast";
 import TransactionTable from "@/src/utils/tables/transaction/transactionTable";
 import { createTransactionColumns } from "@/src/utils/tables/transaction/transactionColumns";
 import { createEmployeeActions } from "@/src/utils/tables/transaction/transactionActions";
+import { transactionColumns } from "@/src/utils/tables/transaction/transactionColumns";
 
 export default function ManageTransactions() {
     const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export default function ManageTransactions() {
     }
 
     const columns = createTransactionColumns(
+        transactionColumns,
         createEmployeeActions(handleDeleteTransaction)
     )
     return (

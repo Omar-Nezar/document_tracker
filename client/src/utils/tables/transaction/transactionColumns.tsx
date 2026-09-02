@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { badgeMapping } from "@/src/utils/other/badgeMapping"
+import { transactionBadgeMapping } from "@/src/utils/other/badgeMapping"
 import { transactionTableFeatures } from "./transactionTableFeatures"
 
 export const columnHelper = createColumnHelper<typeof transactionTableFeatures, UTransaction>()
@@ -38,9 +38,9 @@ export const transactionColumns = [
 
             return (
                 <Badge
-                    variant={badgeMapping[status].variant}
+                    variant={transactionBadgeMapping[status].variant}
                     className={cn(
-                        badgeMapping[status].className,
+                        transactionBadgeMapping[status].className,
                         "text-xs w-20"
                     )}
                 >
@@ -89,11 +89,24 @@ export const transactionColumns = [
     }),
 ]
 
+export const adminTransactionColumns = [
+    ...transactionColumns,
+    columnHelper.accessor("requesterId", {
+        header: "Requester ID",
+        cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("email", {
+        header: "Email",
+        cell: (info) => info.getValue(),
+    }),
+]
+
 export function createTransactionColumns(
+    columns: ColumnDef<UTransaction, unknown>[],
     actions?: ColumnDef<UTransaction, unknown>
 ) {
     return [
-        ...transactionColumns,
+        ...columns,
         ...(actions ? [actions] : []),
     ]
 }
