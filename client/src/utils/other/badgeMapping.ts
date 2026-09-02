@@ -1,3 +1,9 @@
+import {
+    UserShield,
+    User, 
+    type LucideIcon
+} from "lucide-react"
+
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
 type BadgeConfig = {
@@ -5,7 +11,13 @@ type BadgeConfig = {
     className: string;
 };
 
-export const badgeMapping: Record<string, BadgeConfig> = {
+type UserBadgeConfig = {
+    variant: BadgeVariant;
+    className: string;
+    icon: LucideIcon;
+};
+
+export const transactionBadgeMapping: Record<string, BadgeConfig> = {
     SUBMITTED: {
         variant: "default",
         className: "",
@@ -41,3 +53,17 @@ export const badgeMapping: Record<string, BadgeConfig> = {
         className: "bg-yellow-600 hover:bg-yellow-600 border-none",
     },
 };
+
+export const userBadgeMapping: Record<string, UserBadgeConfig> = {
+    Employee: {
+        variant: "default",
+        className: "",
+        icon: User,
+    },
+
+    Admin: {
+        variant: "destructive",
+        className: "",
+        icon: UserShield,
+    },
+}
