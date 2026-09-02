@@ -5,8 +5,6 @@ import {
     transactionDocumentsTable,
     pettyCashCategoriesTable,
     transactionStatusHistoryTable,
-    departmentsTable,
-    branchesTable,
     usersTable
 } from "@schema";
 
@@ -118,8 +116,6 @@ export const getAllTransactions = async () => {
             transactionNumber: pettyCashTransactionsTable.transactionNumber,
             requesterId: pettyCashTransactionsTable.requesterId,
             email: usersTable.email,
-            department: departmentsTable.name,
-            branch: branchesTable.name,
             category: pettyCashCategoriesTable.name,
             amount: pettyCashTransactionsTable.amount,
             description: pettyCashTransactionsTable.description,
@@ -141,22 +137,6 @@ export const getAllTransactions = async () => {
             eq(
                 pettyCashTransactionsTable.requesterId,
                 usersTable.id
-            )
-        )
-
-        .leftJoin(
-            departmentsTable,
-            eq(
-                usersTable.departmentId,
-                departmentsTable.id
-            )
-        )
-
-        .leftJoin(
-            branchesTable,
-            eq(
-                usersTable.branchId,
-                branchesTable.id
             )
         )
 
@@ -186,8 +166,6 @@ export const getAllTransactions = async () => {
             pettyCashTransactionsTable.transactionNumber,
             pettyCashTransactionsTable.requesterId,
             usersTable.email,
-            departmentsTable.name,
-            branchesTable.name,
             pettyCashCategoriesTable.name,
             pettyCashTransactionsTable.amount,
             pettyCashTransactionsTable.description,
