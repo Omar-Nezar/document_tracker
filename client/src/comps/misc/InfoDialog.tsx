@@ -25,9 +25,19 @@ export default function FilesDialog({ selectedTransaction, onClose }: FilesDialo
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        Transaction Files
+                        Transaction Information
                     </DialogTitle>
                 </DialogHeader>
+
+                <section className="space-y-2">
+                    <h3 className="text-sm font-medium">Description</h3>
+                    <p className="whitespace-pre-wrap wrap-break-word text-sm text-muted-foreground">
+                        {selectedTransaction?.description || "No description provided."}
+                    </p>
+                </section>
+
+                <section className="space-y-2">
+                    <h3 className="text-sm font-medium">Transaction Files</h3>
 
                 {selectedTransaction?.documents?.length ? (
                     <div className="flex flex-col gap-2">
@@ -45,6 +55,7 @@ export default function FilesDialog({ selectedTransaction, onClose }: FilesDialo
                         No files attached to this transaction.
                     </p>
                 )}
+                </section>
             </DialogContent>
         </Dialog>
     )

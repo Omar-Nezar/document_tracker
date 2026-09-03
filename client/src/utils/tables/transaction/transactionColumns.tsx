@@ -28,7 +28,10 @@ export const transactionColumns = [
 
     columnHelper.accessor("description", {
         header: "Description",
-        cell: (info) => info.getValue(),
+        cell: (info) =>
+            <div className="max-w-25 truncate" title={info.getValue()}>
+                {info.getValue()}
+            </div>,
     }),
 
     columnHelper.accessor("status", {
@@ -77,15 +80,19 @@ export const transactionColumns = [
 
     columnHelper.accessor("submittedAt", {
         header: "Submitted At",
-        cell: (info) =>
-            !info.getValue()
-                ? "—"
-                : info.getValue(),
+        cell: (info) => {
+            const value = info.getValue()
+
+            return value
+                ? value.match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? "—"
+                : "—"
+        },
     }),
 
     columnHelper.accessor("createdAt", {
         header: "Created At",
-        cell: (info) => info.getValue(),
+        cell: (info) =>
+            info.getValue().match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? "—",
     }),
 ]
 

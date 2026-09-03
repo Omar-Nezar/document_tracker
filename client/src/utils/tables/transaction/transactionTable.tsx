@@ -36,7 +36,7 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import FilesDialog from "@misc/FilesDialog"
+import InfoDialog from "@/src/comps/misc/InfoDialog"
 import type { UTransaction } from "@shared/types/types"
 
 interface TransactionTableProps {
@@ -222,7 +222,7 @@ export default function TransactionTable({
                             </Button>
                         </div>
                     </div>
-                    <FilesDialog
+                    <InfoDialog
                         selectedTransaction={selectedTransaction}
                         onClose={() => setSelectedTransaction(null)}
                     />
