@@ -94,6 +94,12 @@ export const transactionColumns = [
         cell: (info) =>
             info.getValue().match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? "—",
     }),
+
+    columnHelper.accessor("updatedAt", {
+        header: "Updated At",
+        cell: (info) =>
+            info.getValue().match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? "—",
+    }),
 ]
 
 export const adminTransactionColumns = [

@@ -38,6 +38,7 @@ export const getUserTransactionsByUserId = async (userId: number) => {
             status: latestStatus.toStatus,
             submittedAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.submittedAt}, 'YYYY-MM-DD')`,
             createdAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.createdAt}, 'YYYY-MM-DD')`,
+            updatedAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.updatedAt}, 'YYYY-MM-DD')`,
             documents: sql<string[]>`
                         COALESCE(
                             ARRAY_AGG(${transactionDocumentsTable.originalName})
@@ -133,6 +134,7 @@ export const getAllTransactions = async () => {
             status: latestStatus.toStatus,
             submittedAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.submittedAt}, 'YYYY-MM-DD')`,
             createdAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.createdAt}, 'YYYY-MM-DD')`,
+            updatedAt: sql<string>`TO_CHAR(${pettyCashTransactionsTable.updatedAt}, 'YYYY-MM-DD')`,
             documents: sql<string[]>`
                         COALESCE(
                             ARRAY_AGG(${transactionDocumentsTable.originalName})
@@ -183,7 +185,8 @@ export const getAllTransactions = async () => {
             pettyCashTransactionsTable.description,
             latestStatus.toStatus,
             pettyCashTransactionsTable.submittedAt,
-            pettyCashTransactionsTable.createdAt
+            pettyCashTransactionsTable.createdAt,
+            pettyCashTransactionsTable.updatedAt
         )
 
         .orderBy(
