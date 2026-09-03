@@ -6,7 +6,7 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "../user/users.schema";
-import { pettyCashTransactionsTable, transactionStatusEnum } from "../document/pettyCashTransactions.schema";
+import { pettyCashTransactionsTable, transactionStatusEnum } from "./pettyCashTransactions.schema";
 
 export const transactionStatusHistoryTable = pgTable(
     "transaction_status_history",
