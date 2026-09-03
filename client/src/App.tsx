@@ -12,6 +12,7 @@ import ManageTransactions from './comps/employee/ManageTransactions'
 // Admin imports
 import AdminHome from './comps/admin/AdminHome'
 import ManageAllTransactions from './comps/admin/ManageAllTransactions'
+import ManageTransactionHistory from './comps/admin/ManageTransactionHistory'
 import ManageUsers from './comps/admin/ManageUsers'
 
 // Misc imports
@@ -42,6 +43,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/adminhome" element={<AdminHome />} />
           <Route path="/manageAllTransactions" element={<ManageAllTransactions />} />
+          <Route path="/transactionHistory" element={<ManageTransactionHistory />} />
           <Route path="/manageUsers" element={<ManageUsers />} />
           {/* <Route path="/auditlogs" element={<AuditLogs />} /> */}
         </Route>

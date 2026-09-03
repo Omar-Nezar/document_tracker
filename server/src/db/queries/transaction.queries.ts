@@ -1,4 +1,5 @@
 import { eq, desc, sql, and } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { db } from "@db";
 import {
     pettyCashTransactionsTable,
@@ -199,3 +200,47 @@ export type UserTransactions = NonNullable<
 >;
 
 export type UserTransaction = UserTransactions[number];
+
+export const getTransactionHistory = async () => {
+    const requester = alias(usersTable, "requester");
+    const changedBy = alias(usersTable, "changed_by");
+
+    return db
+        .select({
+            id: transactionStatusHistoryTable.id,
+            transactionId: transactionStatusHistoryTable.transactionId,
+            transactionNumber: pettyCashTransactionsTable.transactionNumber,
+            requesterName: requester.name,
+            requesterEmail: requester.email,
+            fromStatus: transactionStatusHistoryTable.fromStatus,
+            toStatus: transactionStatusHistoryTable.toStatus,
+            changedByName: changedBy.name,
+            changedByEmail: changedBy.email,
+            comment: transactionStatusHistoryTable.comment,
+            createdAt: sql<string>`TO_CHAR(${transactionStatusHistoryTable.createdAt}, 'YYYY-MM-DD HH24:MI:SS')`,
+        })
+        .from(transactionStatusHistoryTable)
+        .innerJoin(
+            pettyCashTransactionsTable,
+            eq(
+                transactionStatusHistoryTable.transactionId,
+                pettyCashTransactionsTable.id
+            )
+        )
+        .innerJoin(
+            requester,
+            eq(requester.id, pettyCashTransactionsTable.requesterId)
+        )
+        .innerJoin(
+            changedBy,
+            eq(changedBy.id, transactionStatusHistoryTable.changedBy)
+        )
+        .orderBy(
+            desc(transactionStatusHistoryTable.createdAt),
+            desc(transactionStatusHistoryTable.id)
+        );
+};
+
+export type TransactionHistory = NonNullable<
+    Awaited<ReturnType<typeof getTransactionHistory>>
+>[number];

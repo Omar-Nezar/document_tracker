@@ -8,6 +8,7 @@ import {
     createTransaction,
     getUserTransactions,
     getTransactions,
+    getHistory,
     updateTransactionEmployee,
     updateTransactionAdmin,
     deleteTransaction,
@@ -26,6 +27,7 @@ router.post("/create", protect,
 );
 router.get("/getUserTransactions", protect, employeeOnly, getUserTransactions);
 router.get("/getTransactions", protect, adminOnly, getTransactions);
+router.get("/getHistory", protect, adminOnly, getHistory);
 router.put("/updateTransaction/:transactionId", protect,
     employeeOnly,
     uploadDocuments.array("documents", 5),

@@ -2,7 +2,7 @@ import {
     createAsyncThunk,
     createSlice,
 } from "@reduxjs/toolkit";
-import type { Transaction, UTransaction } from "@shared/types/types";
+import type { Transaction, UTransaction, UTransactionHistory } from "@shared/types/types";
 import type { CreateTransactionForm } from "@shared/schemas/transaction.schema";
 import API from "./api";
 
@@ -39,6 +39,7 @@ interface UpdateTransactionPayload {
 
 interface TransactionState {
     transactions: UTransaction[];
+    history: UTransactionHistory[];
     loading: boolean;
     error: string | null;
     msg: string | null;
@@ -47,6 +48,7 @@ interface TransactionState {
 
 const initialState: TransactionState = {
     transactions: [],
+    history: [],
     loading: false,
     error: null,
     msg: null,
@@ -175,6 +177,18 @@ export const getTransactions = createAsyncThunk(
     }
 )
 
+export const getTransactionHistory = createAsyncThunk(
+    "transactions/getTransactionHistory",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await API.get("/transaction/getHistory");
+            return res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Failed to retrieve transaction history");
+        }
+    }
+)
+
 export const deleteTransaction = createAsyncThunk(
     "transactions/deleteTransaction",
     async (transactionId: number, { rejectWithValue }) => {
@@ -285,6 +299,20 @@ const transactionSlice = createSlice({
             .addCase(getTransactions.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string || "Failed to retrieve transactions";
+            });
+        builder
+            .addCase(getTransactionHistory.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getTransactionHistory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.history = action.payload.history;
+                state.msg = action.payload.message;
+            })
+            .addCase(getTransactionHistory.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || "Failed to retrieve transaction history";
             });
         builder
             // DELETE TRANSACTION

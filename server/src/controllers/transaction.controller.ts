@@ -21,7 +21,8 @@ import {
 
 import {
     getUserTransactionsByUserId,
-    getAllTransactions
+    getAllTransactions,
+    getTransactionHistory
 } from "@/db/queries/transaction.queries";
 
 export const createTransaction = async (req: AuthRequest, res: Response) => {
@@ -476,6 +477,23 @@ export const deleteTransactionAdmin = async (req: AuthRequest, res: Response) =>
             "Delete transaction error:",
             error
         );
+
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+}
+
+export const getHistory = async (req: AuthRequest, res: Response) => {
+    try {
+        const history = await getTransactionHistory();
+
+        return res.status(200).json({
+            message: "Transaction history retrieved successfully",
+            history,
+        });
+    } catch (error) {
+        console.error("Get transaction history error:", error);
 
         return res.status(500).json({
             message: "Internal server error",

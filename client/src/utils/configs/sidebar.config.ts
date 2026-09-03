@@ -4,6 +4,7 @@ import {
   FilePlusCorner,
   Table2,
   UsersRound,
+  History,
   type LucideIcon
 } from "lucide-react"
 
@@ -34,6 +35,7 @@ export const sidebarConfig: SidebarConfig = {
     items: [
       { label: "Users", to: "/manageUsers", icon: UsersRound },
       { label: "Transactions", to: "/manageAllTransactions", icon: Table2 },
+      { label: "History", to: "/transactionHistory", icon: History },
     ],
   },
 }
