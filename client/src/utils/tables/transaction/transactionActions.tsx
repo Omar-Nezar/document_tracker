@@ -16,7 +16,8 @@ import {
 } from "lucide-react"
 
 export const createEmployeeActions = (
-    handleDelete: (id: number) => void
+    handleDelete: (id: number) => void,
+    handleEdit: (transaction: import("@shared/types/types").UTransaction) => void
 ) =>
     columnHelper.display({
         id: "actions",
@@ -36,7 +37,7 @@ export const createEmployeeActions = (
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 p-0"
+                                className="h-6 w-6 p-0 m-0"
                             >
                                 <span className="sr-only">
                                     Open menu
@@ -50,10 +51,7 @@ export const createEmployeeActions = (
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem
                             onClick={() =>
-                                console.log(
-                                    "Edit clicked for:",
-                                    transaction
-                                )
+                                handleEdit(transaction)
                             }
                             className="cursor-pointer"
                         >
@@ -77,7 +75,8 @@ export const createEmployeeActions = (
     })
 
 export const createAdminActions = (
-    handleDelete: (id: number) => void
+    handleDelete: (id: number) => void,
+    handleEdit: (transaction: import("@shared/types/types").UTransaction) => void
 ) =>
     columnHelper.display({
         id: "actions",
@@ -93,7 +92,7 @@ export const createAdminActions = (
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 p-0"
+                                className="h-6 w-6 p-0 m-0"
                             >
                                 <span className="sr-only">
                                     Open menu
@@ -107,10 +106,7 @@ export const createAdminActions = (
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem
                             onClick={() =>
-                                console.log(
-                                    "Edit clicked for:",
-                                    transaction
-                                )
+                                handleEdit(transaction)
                             }
                             className="cursor-pointer"
                         >

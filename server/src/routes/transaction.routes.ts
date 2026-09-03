@@ -8,6 +8,8 @@ import {
     createTransaction,
     getUserTransactions,
     getTransactions,
+    updateTransactionEmployee,
+    updateTransactionAdmin,
     deleteTransaction,
     deleteTransactionAdmin,
 } from "@/controllers/transaction.controller";
@@ -24,6 +26,16 @@ router.post("/create", protect,
 );
 router.get("/getUserTransactions", protect, employeeOnly, getUserTransactions);
 router.get("/getTransactions", protect, adminOnly, getTransactions);
+router.put("/updateTransaction/:transactionId", protect,
+    employeeOnly,
+    uploadDocuments.array("documents", 5),
+    updateTransactionEmployee
+);
+router.put("/updateTransactionAdmin/:transactionId", protect,
+    adminOnly,
+    uploadDocuments.array("documents", 5),
+    updateTransactionAdmin
+);
 router.delete("/deleteTransaction/:transactionId", protect, employeeOnly, deleteTransaction);
 router.delete("/deleteTransactionAdmin/:transactionId", protect, adminOnly, deleteTransactionAdmin);
 

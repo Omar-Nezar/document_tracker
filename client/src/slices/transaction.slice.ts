@@ -30,6 +30,13 @@ interface CreateTransactionPayload extends CreateTransactionForm {
     submit: boolean;
 }
 
+interface UpdateTransactionPayload {
+    id: number;
+    data: CreateTransactionPayload;
+    files: File[];
+    admin?: boolean;
+}
+
 interface TransactionState {
     transactions: UTransaction[];
     loading: boolean;
@@ -43,6 +50,14 @@ const initialState: TransactionState = {
     loading: false,
     error: null,
     msg: null,
+};
+
+const categoryLabels: Record<number, string> = {
+    1: "Vehicle Expense",
+    2: "Office Supplies",
+    3: "Transportation",
+    4: "Emergency Expense",
+    5: "Miscellaneous",
 };
 
 export const createTransaction = createAsyncThunk<
@@ -102,6 +117,35 @@ export const createTransaction = createAsyncThunk<
 
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to create request");
+        }
+    }
+);
+
+export const updateTransaction = createAsyncThunk<
+    { message: string; transaction: Transaction },
+    UpdateTransactionPayload,
+    { rejectValue: string }
+>(
+    "transactions/updateTransaction",
+    async ({ id, data, files, admin = false }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData();
+            formData.append("amount", String(data.amount));
+            formData.append("categoryId", String(data.categoryId));
+            formData.append("description", data.description);
+            formData.append("submit", String(data.submit));
+
+            files.forEach((file) => formData.append("documents", file));
+
+            const endpoint = admin
+                ? `/transaction/updateTransactionAdmin/${id}`
+                : `/transaction/updateTransaction/${id}`;
+            const res = await API.put(endpoint, formData);
+            return res.data;
+        } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to update request"
+            );
         }
     }
 );
@@ -179,6 +223,36 @@ const transactionSlice = createSlice({
             .addCase(createTransaction.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || "Failed to create request";
+            });
+        builder
+            // UPDATE
+            .addCase(updateTransaction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.msg = null;
+            })
+            .addCase(updateTransaction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload.message;
+                const index = state.transactions.findIndex(
+                    (transaction) => transaction.id === action.payload.transaction.id
+                );
+                if (index !== -1) {
+                    state.transactions[index] = {
+                        ...state.transactions[index],
+                        ...action.payload.transaction,
+                        categoryId: action.payload.transaction.categoryId,
+                        category: categoryLabels[action.payload.transaction.categoryId],
+                        documents: [
+                            ...(state.transactions[index].documents ?? []),
+                            ...action.meta.arg.files.map((file) => file.name),
+                        ],
+                    };
+                }
+            })
+            .addCase(updateTransaction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Failed to update request";
             });
         builder
             // GET USER TRANSACTIONS

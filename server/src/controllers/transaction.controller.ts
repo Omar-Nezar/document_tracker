@@ -263,6 +263,138 @@ export const getTransactions = async (req: AuthRequest, res: Response) => {
     }
 }
 
+const updateTransaction = async (
+    req: AuthRequest,
+    res: Response,
+    admin: boolean
+) => {
+    try {
+        const transactionId = Number(req.params.transactionId);
+        const userId = req.user?.userId;
+        const { amount, categoryId, description, submit } = req.body;
+
+        if (!Number.isInteger(transactionId) || transactionId <= 0) {
+            return res.status(400).json({ message: "Invalid transaction ID" });
+        }
+
+        if (!amount || Number(amount) <= 0) {
+            return res.status(400).json({ message: "Amount is required" });
+        }
+
+        if (!categoryId || Number(categoryId) <= 0) {
+            return res.status(400).json({ message: "Category is required" });
+        }
+
+        if (!description?.trim()) {
+            return res.status(400).json({ message: "Description is required" });
+        }
+
+        const result = await db.transaction(async (tx) => {
+            const [current] = await tx
+                .select({
+                    id: pettyCashTransactionsTable.id,
+                    status: pettyCashTransactionsTable.status,
+                })
+                .from(pettyCashTransactionsTable)
+                .where(
+                    admin
+                        ? eq(pettyCashTransactionsTable.id, transactionId)
+                        : and(
+                            eq(pettyCashTransactionsTable.id, transactionId),
+                            eq(pettyCashTransactionsTable.requesterId, userId!),
+                            eq(pettyCashTransactionsTable.status, "DRAFT")
+                        )
+                )
+                .limit(1);
+
+            if (!current) {
+                throw new Error(admin ? "TRANSACTION_NOT_FOUND" : "TRANSACTION_NOT_EDITABLE");
+            }
+
+            const nextStatus = admin
+                ? current.status
+                : submit === "true"
+                    ? "SUBMITTED"
+                    : "DRAFT";
+
+            const [transaction] = await tx
+                .update(pettyCashTransactionsTable)
+                .set({
+                    amount: String(amount),
+                    categoryId: Number(categoryId),
+                    description: description.trim(),
+                    status: nextStatus,
+                    submittedAt:
+                        !admin && nextStatus === "SUBMITTED"
+                            ? sql`CURRENT_TIMESTAMP`
+                            : undefined,
+                    updatedAt: sql`CURRENT_TIMESTAMP`,
+                })
+                .where(eq(pettyCashTransactionsTable.id, transactionId))
+                .returning();
+
+            if (!transaction) {
+                throw new Error("TRANSACTION_NOT_FOUND");
+            }
+
+            if (!admin && current.status !== nextStatus) {
+                await tx
+                    .insert(transactionStatusHistoryTable)
+                    .values({
+                        transactionId,
+                        fromStatus: current.status,
+                        toStatus: nextStatus,
+                        changedBy: userId!,
+                        comment: "Request submitted",
+                    });
+            }
+
+            const files = req.files as Express.Multer.File[];
+            if (files?.length) {
+                await tx
+                    .insert(transactionDocumentsTable)
+                    .values(
+                        files.map((file) => ({
+                            transactionId,
+                            originalName: file.originalname,
+                            storedName: file.filename,
+                            mimeType: file.mimetype,
+                            fileSize: file.size,
+                            filePath: file.path,
+                        }))
+                    );
+            }
+
+            return transaction;
+        });
+
+        return res.status(200).json({
+            message: admin || submit !== "true"
+                ? "Transaction updated successfully"
+                : "Request submitted successfully",
+            transaction: result,
+        });
+    } catch (error) {
+        console.error("Update transaction error:", error);
+
+        if (error instanceof Error && error.message === "TRANSACTION_NOT_EDITABLE") {
+            return res.status(403).json({ message: "Only draft transactions can be edited" });
+        }
+
+        if (error instanceof Error && error.message === "TRANSACTION_NOT_FOUND") {
+            return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const updateTransactionEmployee = (req: AuthRequest, res: Response) =>
+    updateTransaction(req, res, false);
+
+export const updateTransactionAdmin = (req: AuthRequest, res: Response) =>
+    updateTransaction(req, res, true);
+
 export const deleteTransaction = async (req: AuthRequest, res: Response) => {
     try {
         const transactionId = Number(req.params.transactionId);

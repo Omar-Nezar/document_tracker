@@ -65,12 +65,14 @@ interface EditRequestDialogProps {
     transaction: UTransaction | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    admin?: boolean;
 }
 
 export default function EditRequestDialog({
     transaction,
     open,
     onOpenChange,
+    admin = false,
 }: EditRequestDialogProps) {
     const [files, setFiles] = useState<SelectedFile[]>([]);
 
@@ -145,6 +147,7 @@ export default function EditRequestDialog({
                     submit,
                 },
                 files: files.map(({ file }) => file),
+                admin,
             })
         ).unwrap();
 
@@ -186,14 +189,15 @@ export default function EditRequestDialog({
                     </DialogTitle>
 
                     <DialogDescription>
-                        Update your draft request before saving or
-                        submitting it.
+                        {admin
+                            ? "Update the transaction details. Its workflow status will remain unchanged."
+                            : "Update your draft request before saving or submitting it."}
                     </DialogDescription>
                 </DialogHeader>
 
                 <form
                     onSubmit={form.handleSubmit(
-                        (data) => handleSave(data, true)
+                        (data) => handleSave(data, !admin)
                     )}
                 >
                     <div className="space-y-6">
@@ -403,7 +407,7 @@ export default function EditRequestDialog({
                                             </p>
 
                                             {transaction.documents.map(
-                                                (file, index) => (
+                                                (file: string, index: number) => (
                                                     <div
                                                         key={`${file}-${index}`}
                                                         className="flex items-center gap-3 rounded-md border p-3"
@@ -493,25 +497,26 @@ export default function EditRequestDialog({
                         </Button>
 
                         <LoadingButton
-                            type="button"
-                            variant="outline"
-                            onClick={form.handleSubmit(
-                                (data) =>
-                                    handleSave(data, false)
+                            type={admin ? "submit" : "button"}
+                            variant={admin ? "default" : "outline"}
+                            onClick={admin ? undefined : form.handleSubmit(
+                                (data) => handleSave(data, false)
                             )}
                             loading={loading}
                             loadingChildren="Saving..."
                         >
-                            Save Changes
+                            {admin ? "Save Changes" : "Save Changes"}
                         </LoadingButton>
 
-                        <LoadingButton
-                            type="submit"
-                            loading={loading}
-                            loadingChildren="Submitting..."
-                        >
-                            Submit Request
-                        </LoadingButton>
+                        {!admin && (
+                            <LoadingButton
+                                type="submit"
+                                loading={loading}
+                                loadingChildren="Submitting..."
+                            >
+                                Submit Request
+                            </LoadingButton>
+                        )}
 
                     </DialogFooter>
                 </form>

@@ -1,4 +1,4 @@
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 import { db } from "@db";
 import {
     pettyCashTransactionsTable,
@@ -31,6 +31,7 @@ export const getUserTransactionsByUserId = async (userId: number) => {
         .select({
             id: pettyCashTransactionsTable.id,
             transactionNumber: pettyCashTransactionsTable.transactionNumber,
+            categoryId: pettyCashTransactionsTable.categoryId,
             category: pettyCashCategoriesTable.name,
             amount: pettyCashTransactionsTable.amount,
             description: pettyCashTransactionsTable.description,
@@ -46,6 +47,14 @@ export const getUserTransactionsByUserId = async (userId: number) => {
                     `,
         })
         .from(pettyCashTransactionsTable)
+
+        .innerJoin(
+            usersTable,
+            eq(
+                pettyCashTransactionsTable.requesterId,
+                usersTable.id
+            )
+        )
 
         .leftJoin(
             pettyCashCategoriesTable,
@@ -69,15 +78,16 @@ export const getUserTransactionsByUserId = async (userId: number) => {
         )
 
         .where(
-            eq(
-                pettyCashTransactionsTable.requesterId,
-                userId
+            and(
+                eq(pettyCashTransactionsTable.requesterId, userId),
+                eq(usersTable.isActive, true)
             )
         )
 
         .groupBy(
             pettyCashTransactionsTable.id,
             pettyCashTransactionsTable.transactionNumber,
+            pettyCashTransactionsTable.categoryId,
             pettyCashCategoriesTable.name,
             pettyCashTransactionsTable.amount,
             pettyCashTransactionsTable.description,
@@ -116,6 +126,7 @@ export const getAllTransactions = async () => {
             transactionNumber: pettyCashTransactionsTable.transactionNumber,
             requesterId: pettyCashTransactionsTable.requesterId,
             email: usersTable.email,
+            categoryId: pettyCashTransactionsTable.categoryId,
             category: pettyCashCategoriesTable.name,
             amount: pettyCashTransactionsTable.amount,
             description: pettyCashTransactionsTable.description,
@@ -166,6 +177,7 @@ export const getAllTransactions = async () => {
             pettyCashTransactionsTable.transactionNumber,
             pettyCashTransactionsTable.requesterId,
             usersTable.email,
+            pettyCashTransactionsTable.categoryId,
             pettyCashCategoriesTable.name,
             pettyCashTransactionsTable.amount,
             pettyCashTransactionsTable.description,
