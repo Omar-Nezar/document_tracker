@@ -26,6 +26,18 @@ export const deleteUser = createAsyncThunk(
     }
 );
 
+export const disableUser = createAsyncThunk(
+    "admin/disableUser",
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const res = await API.patch(`/admin/disableUser/${id}`);
+            return res.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "User disable failed");
+        }
+    }
+);
+
 interface AdminState {
     users: User[];
     loading: boolean;
@@ -77,6 +89,21 @@ const adminSlice = createSlice({
                 state.users = state.users.filter((user) => user.id !== action.meta.arg);
             })
             .addCase(deleteUser.rejected, (state, action: any) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
+        builder
+            .addCase(disableUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(disableUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload.message;
+                const user = state.users.find((item) => item.id === action.meta.arg);
+                if (user) user.isactive = false;
+            })
+            .addCase(disableUser.rejected, (state, action: any) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

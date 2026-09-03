@@ -48,3 +48,36 @@ export const delUser = async (req: AuthRequest, res: Response) => {
         });
     }
 };
+
+export const disableUser = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = Number(req.params.id);
+
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+
+        const [user] = await db
+            .update(usersTable)
+            .set({
+                isActive: false,
+                updatedAt: new Date(),
+            })
+            .where(eq(usersTable.id, userId))
+            .returning({ id: usersTable.id });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({
+            message: "User account disabled successfully",
+        });
+    } catch (error) {
+        console.error("Disable user error:", error);
+
+        return res.status(500).json({
+            message: "Failed to disable user account.",
+        });
+    }
+};

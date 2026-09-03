@@ -1,4 +1,4 @@
-import { type UTransaction } from "@shared/types/types"
+import { type User } from "@shared/types/types"
 import {
     createColumnHelper,
     type ColumnDef
@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { userBadgeMapping } from "@/src/utils/other/badgeMapping"
 import { userTableFeatures } from "./userTableFeatures"
 
-export const columnHelper = createColumnHelper<typeof userTableFeatures, UTransaction>()
+export const columnHelper = createColumnHelper<typeof userTableFeatures, User>()
 
 export const userColumns = [
     columnHelper.accessor("id", {
@@ -56,6 +56,16 @@ export const userColumns = [
         cell: (info) => info.getValue(),
     }),
 
+    columnHelper.accessor("isactive", {
+        header: "Status",
+        cell: (info) => {
+            const isActive = info.getValue()
+            return isActive
+                ? <Badge variant="default" className="bg-green-500 w-15">Active</Badge>
+                : <Badge variant="destructive" className="w-15">Inactive</Badge>
+        }
+    }),
+
     columnHelper.accessor("createdAt", {
         header: "Created At",
         cell: (info) => info.getValue(),
@@ -63,7 +73,7 @@ export const userColumns = [
 ]
 
 export function createUserColumns(
-    actions?: ColumnDef<UTransaction, unknown>
+    actions?: ColumnDef<User, unknown>
 ) {
     return [
         ...userColumns,

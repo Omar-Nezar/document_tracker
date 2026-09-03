@@ -11,19 +11,21 @@ import { Button } from "@/components/ui/button"
 
 import {
     ChevronsUpDown,
+    Ban,
     Pencil,
     Trash2,
 } from "lucide-react"
 
 export const createAdminActions = (
-    handleDelete: (id: number) => void
+    handleDelete: (id: number) => void,
+    handleDisable: (id: number) => void
 ) =>
     columnHelper.display({
         id: "actions",
         header: "Actions",
 
         cell: ({ row }) => {
-            const transaction = row.original
+            const user = row.original
 
             return (
                 <DropdownMenu>
@@ -48,7 +50,7 @@ export const createAdminActions = (
                             onClick={() =>
                                 console.log(
                                     "Edit clicked for:",
-                                    transaction
+                                    user
                                 )
                             }
                             className="cursor-pointer"
@@ -58,8 +60,17 @@ export const createAdminActions = (
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
+                            onClick={() => handleDisable(user.id)}
+                            disabled={!user.isactive}
+                            className="cursor-pointer"
+                        >
+                            <Ban className="mr-2 h-4 w-4" />
+                            <span>{user.isactive ? "Disable" : "Disabled"}</span>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
                             onClick={() =>
-                                handleDelete(transaction.id)
+                                handleDelete(user.id)
                             }
                             className="cursor-pointer text-destructive focus:text-destructive"
                         >

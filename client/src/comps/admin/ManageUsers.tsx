@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/src/store/store";
-import { getUsers, } from "@/src/slices/admin.slice";
+import { getUsers, disableUser } from "@/src/slices/admin.slice";
 import { useEffect } from "react";
 import showToast from "@misc/showToast";
 import { deleteUser } from "@/src/slices/admin.slice";
@@ -28,8 +28,18 @@ export default function ManageUsers() {
         await promise;
     }
 
+    const handleDisableUser = async (userId: number) => {
+        const promise = dispatch(disableUser(userId)).unwrap();
+        showToast({
+            promise,
+            message: "User account disabled",
+            description: "The user and related records are no longer active",
+        });
+        await promise;
+    }
+
     const columns = createUserColumns(
-       createAdminActions(handleDeleteUser)
+       createAdminActions(handleDeleteUser, handleDisableUser)
     )
     return (
         <UserTable
